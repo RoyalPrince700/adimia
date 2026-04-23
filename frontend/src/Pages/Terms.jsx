@@ -1,97 +1,124 @@
 import React from 'react';
+import {
+  SITE_NAME,
+  CONTACT_PHONE,
+  CONTACT_PHONE_TEL,
+  CONTACT_EMAIL,
+  CONTACT_EMAIL_HREF,
+  CONTACT_ADDRESS,
+} from '../constants/siteContact';
+import ContentPageShell, { kicker, sectionH2, body, card, cardMuted, soft, num, grid2 } from '../components/ContentPageShell';
 
 const Terms = () => {
   return (
-    <div className="page-shell">
-      <header className="page-header">
-        <span className="page-kicker">Policy Center</span>
-        <h1 className="page-title">Terms & Conditions</h1>
-        <p className="page-subtitle">
-          Review the rules and responsibilities that govern how Preordify products, checkout flows, and platform services are used.
+    <ContentPageShell
+      eyebrow="Policy"
+      headline="Terms & Conditions"
+      subhead={`Review the rules and responsibilities that govern how ${SITE_NAME} products, checkout, and platform services are used.`}
+      imageTagLeft="Fair use"
+      imageTagRight="Clear terms"
+    >
+      <section className={card}>
+        <h2 className={sectionH2}>Acceptance of terms</h2>
+        <p className={`${body} mt-6`}>
+          By accessing and using the {SITE_NAME} website and services, you agree to these terms. If you do not accept them, please do not use
+          the platform.
         </p>
-      </header>
+      </section>
 
-      <div className="space-y-6">
-        <section className="page-card">
-          <h2 className="page-card-title">Acceptance of terms</h2>
-          <p className="page-copy">
-            By accessing and using the Preordify website and services, you agree to these terms. If you do not accept them, please do not use the platform.
-          </p>
-        </section>
+      <section className={cardMuted}>
+        <h2 className={sectionH2}>Use license</h2>
+        <div className="mt-6 space-y-4">
+          <div>
+            <p className="font-semibold text-slate-900">Permission granted</p>
+            <p className="mt-1 text-sm text-slate-600">You may temporarily access materials on the {SITE_NAME} website for personal, non-commercial viewing.</p>
+          </div>
+          <div>
+            <p className="font-semibold text-slate-900">Prohibited uses</p>
+            <p className="mt-1 text-sm text-slate-600">You may not modify, reproduce, distribute, sell, or create derivative works from platform materials without approval.</p>
+          </div>
+        </div>
+      </section>
 
-        <section className="page-card-muted">
-          <h2 className="page-card-title">Use license</h2>
-          <div className="space-y-4">
-            <div>
-              <p className="font-semibold text-slate-900">Permission granted</p>
-              <p className="mt-1 text-sm text-slate-600">You may temporarily access materials on the Preordify website for personal, non-commercial viewing.</p>
-            </div>
-            <div>
-              <p className="font-semibold text-slate-900">Prohibited uses</p>
-              <p className="mt-1 text-sm text-slate-600">You may not modify, reproduce, distribute, sell, or create derivative works from platform materials without approval.</p>
-            </div>
+      <div className={grid2}>
+        <section className={card}>
+          <h2 className={sectionH2}>Product information and pricing</h2>
+          <div className="mt-6 space-y-4 text-sm text-slate-600 sm:text-base">
+            <p>We aim to provide accurate product descriptions, availability, and pricing, but errors may occasionally occur.</p>
+            <p>Prices and availability may change without notice, including for limited drops or inventory-based offers.</p>
           </div>
         </section>
 
-        <section className="page-grid">
-          <section className="page-card">
-            <h2 className="page-card-title">Product information and pricing</h2>
-            <div className="space-y-4 text-sm text-slate-600">
-              <p>We aim to provide accurate product descriptions, availability, and pricing, but errors may occasionally occur.</p>
-              <p>Prices and availability may change without notice, especially for preorder campaigns, limited drops, or inventory-based offers.</p>
-            </div>
-          </section>
-
-          <section className="page-card">
-            <h2 className="page-card-title">Orders and payments</h2>
-            <div className="page-list text-sm">
-              <div className="page-list-item"><span className="page-list-bullet">1</span><span>All orders are subject to acceptance and availability.</span></div>
-              <div className="page-list-item"><span className="page-list-bullet">2</span><span>Payment must be completed before order processing begins.</span></div>
-              <div className="page-list-item"><span className="page-list-bullet">3</span><span>We may refuse or cancel an order where necessary.</span></div>
-              <div className="page-list-item"><span className="page-list-bullet">4</span><span>Payments are processed through authorized payment providers.</span></div>
-            </div>
-          </section>
-        </section>
-
-        <section className="page-card">
-          <h2 className="page-card-title">Delivery, refunds, and conduct</h2>
-          <div className="page-grid">
-            <div className="page-soft-panel">
-              <p className="font-semibold text-slate-900">Shipping and delivery</p>
-              <p className="mt-2 text-sm text-slate-600">Delivery timelines are estimates and may vary due to carrier performance, demand cycles, or location.</p>
-            </div>
-            <div className="page-soft-panel">
-              <p className="font-semibold text-slate-900">Returns and refunds</p>
-              <p className="mt-2 text-sm text-slate-600">Returns are handled according to our return policy, including condition checks and processing timelines.</p>
-            </div>
-            <div className="page-soft-panel md:col-span-2">
-              <p className="font-semibold text-slate-900">User conduct</p>
-              <p className="mt-2 text-sm text-slate-600">Users must not engage in fraud, unlawful activity, service disruption, unauthorized access attempts, or misuse of platform systems.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="page-dark-card">
-          <h2 className="text-2xl font-bold">Legal contact</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-300">
-            Questions about these terms can be directed to the Preordify legal and compliance team.
-          </p>
-          <div className="mt-6 space-y-3 text-sm">
-            <div><span className="page-contact-label">Email:</span> legal@preordify.com</div>
-            <div><span className="page-contact-label">Phone:</span> 07019277357</div>
-            <div><span className="page-contact-label">Address:</span> Lagos, Nigeria</div>
-          </div>
-        </section>
-
-        <section className="page-card-muted text-center">
-          <h2 className="page-card-title">Terms updates</h2>
-          <p className="page-copy max-w-3xl mx-auto">
-            These terms may be revised from time to time. Updated versions become effective when published on this page.
-          </p>
-          <p className="mt-4 text-sm text-slate-500">Last updated: January 14, 2026</p>
+        <section className={card}>
+          <h2 className={sectionH2}>Orders and payments</h2>
+          <ul className="mt-6 space-y-3 text-slate-600">
+            {[
+              'All orders are subject to acceptance and availability.',
+              'Payment must be completed before order processing begins.',
+              'We may refuse or cancel an order where necessary.',
+              'Payments are processed through authorized payment providers.',
+            ].map((line, i) => (
+              <li key={line} className="flex gap-3 text-sm sm:text-base">
+                <span className={num}>{i + 1}</span>
+                <span className="leading-7">{line}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
-    </div>
+
+      <section className={card}>
+        <h2 className={sectionH2}>Delivery, refunds, and conduct</h2>
+        <div className={`${grid2} mt-6`}>
+          {[
+            ['Shipping and delivery', 'Delivery timelines are estimates and may vary due to carrier performance, demand cycles, or location.'],
+            ['Returns and refunds', 'Returns are handled according to our return policy, including condition checks and processing timelines.'],
+            [
+              'User conduct',
+              'Users must not engage in fraud, unlawful activity, service disruption, unauthorized access attempts, or misuse of platform systems.',
+            ],
+          ].map(([title, t]) => (
+            <div key={title} className={title === 'User conduct' ? `${soft} md:col-span-2` : soft}>
+              <p className="font-semibold text-slate-900">{title}</p>
+              <p className="mt-2 text-sm text-slate-600">{t}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={cardMuted}>
+        <p className={kicker}>Legal</p>
+        <h2 className={sectionH2}>Questions about these terms</h2>
+        <p className={`${body} mt-3`}>
+          Contact us at the same address and phone we list on our Contact page.
+        </p>
+        <div className="mt-6 space-y-4 rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 text-sm">
+            <span className="text-slate-500">Email</span>
+            <a href={CONTACT_EMAIL_HREF} className="shrink-0 break-all text-right text-sm font-semibold text-slate-950 hover:underline">
+              {CONTACT_EMAIL}
+            </a>
+          </div>
+          <div className="flex items-center justify-between gap-2 text-sm">
+            <span className="text-slate-500">Phone</span>
+            <a href={CONTACT_PHONE_TEL} className="font-semibold text-slate-950 hover:underline">
+              {CONTACT_PHONE}
+            </a>
+          </div>
+          <p className="pt-1 text-sm text-slate-600">
+            <span className="font-medium text-slate-800">Address:</span> {CONTACT_ADDRESS}
+          </p>
+        </div>
+      </section>
+
+      <section className={`${cardMuted} text-center`}>
+        <h2 className={sectionH2}>Terms updates</h2>
+        <p className={`${body} mx-auto mt-4 max-w-2xl`}>
+          These terms may be revised from time to time. Updated versions become effective when published on this page.
+        </p>
+        <p className="mt-4 text-sm text-slate-500">Last updated: April 23, 2026</p>
+      </section>
+    </ContentPageShell>
   );
 };
 

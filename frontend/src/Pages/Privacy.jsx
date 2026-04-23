@@ -1,100 +1,118 @@
 import React from 'react';
+import {
+  SITE_NAME,
+  CONTACT_PHONE,
+  CONTACT_PHONE_TEL,
+  CONTACT_EMAIL,
+  CONTACT_EMAIL_HREF,
+  CONTACT_ADDRESS,
+} from '../constants/siteContact';
+import ContentPageShell, { kicker, sectionH2, body, card, cardMuted, soft, num, grid2 } from '../components/ContentPageShell';
 
 const Privacy = () => {
   return (
-    <div className="page-shell">
-      <header className="page-header">
-        <span className="page-kicker">Policy Center</span>
-        <h1 className="page-title">Privacy Policy</h1>
-        <p className="page-subtitle">
-          Learn how Preordify collects, uses, and protects customer data across browsing, checkout, preorder updates, and support interactions.
+    <ContentPageShell
+      eyebrow="Policy"
+      headline="Privacy Policy"
+      subhead={`Learn how ${SITE_NAME} collects, uses, and protects customer data across browsing, checkout, order updates, and support interactions.`}
+      imageTagLeft="Your data"
+      imageTagRight="Protected"
+    >
+      <section className={card}>
+        <h2 className={sectionH2}>Information we collect</h2>
+        <div className={`${grid2} mt-6`}>
+          {[
+            ['Personal information', 'Name, email address, phone number, and shipping address when you create an account or place an order.'],
+            ['Payment information', 'Payment details are processed securely through authorized payment partners and are not stored in plain text.'],
+            ['Usage data', 'We track pages viewed, actions taken, and product interest signals to improve the storefront experience.'],
+            ['Support history', 'Messages, order references, and service history may be stored so we can resolve issues efficiently.'],
+          ].map(([title, text]) => (
+            <div key={title} className={soft}>
+              <p className="font-semibold text-slate-900">{title}</p>
+              <p className="mt-2 text-sm text-slate-600">{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className={cardMuted}>
+        <h2 className={sectionH2}>How we use your information</h2>
+        <ol className="mt-6 space-y-3 text-slate-600">
+          {[
+            'Process and fulfill purchases and delivery updates.',
+            'Provide customer support and respond to service inquiries.',
+            'Send important transactional notifications related to orders and account activity.',
+            'Improve site performance, merchandising, and user experience.',
+            'Deliver marketing updates only when you have given consent.',
+          ].map((line, i) => (
+            <li key={line} className="flex gap-3">
+              <span className={num}>{i + 1}</span>
+              <span className="text-sm leading-7 sm:text-base">{line}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className={card}>
+        <h2 className={sectionH2}>Sharing and security</h2>
+        <p className={`${body} mt-6`}>
+          {SITE_NAME} does not sell or rent customer data. Information may be shared only with trusted service providers, payment
+          processors, logistics partners, or when required by law. We protect data using SSL encryption, access controls, secure
+          payment processing, and internal security practices designed to reduce unauthorized access.
         </p>
-      </header>
+      </section>
 
-      <div className="space-y-6">
-        <section className="page-card">
-          <h2 className="page-card-title">Information we collect</h2>
-          <div className="page-grid">
-            <div className="page-soft-panel">
-              <p className="font-semibold text-slate-900">Personal information</p>
-              <p className="mt-2 text-sm text-slate-600">Name, email address, phone number, and shipping address when you create an account or place an order.</p>
-            </div>
-            <div className="page-soft-panel">
-              <p className="font-semibold text-slate-900">Payment information</p>
-              <p className="mt-2 text-sm text-slate-600">Payment details are processed securely through authorized payment partners and are not stored in plain text.</p>
-            </div>
-            <div className="page-soft-panel">
-              <p className="font-semibold text-slate-900">Usage data</p>
-              <p className="mt-2 text-sm text-slate-600">We track pages viewed, actions taken, and product interest signals to improve the storefront experience.</p>
-            </div>
-            <div className="page-soft-panel">
-              <p className="font-semibold text-slate-900">Support history</p>
-              <p className="mt-2 text-sm text-slate-600">Messages, order references, and service history may be stored so we can resolve issues efficiently.</p>
-            </div>
+      <div className={grid2}>
+        <section className={card}>
+          <h2 className={sectionH2}>Your rights</h2>
+          <div className="mt-6 space-y-4">
+            {[
+              ['Access and update', 'You can review and update your account information at any time.'],
+              ['Deletion requests', 'You may request deletion of your personal information, subject to operational and legal requirements.'],
+              ['Marketing opt-out', 'You can unsubscribe from promotional communications whenever you choose.'],
+            ].map(([t, b]) => (
+              <div key={t}>
+                <p className="font-semibold text-slate-900">{t}</p>
+                <p className="mt-1 text-sm text-slate-600">{b}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="page-card-muted">
-          <h2 className="page-card-title">How we use your information</h2>
-          <div className="page-list">
-            <div className="page-list-item"><span className="page-list-bullet">1</span><span>Process and fulfill purchases, preorders, and delivery updates.</span></div>
-            <div className="page-list-item"><span className="page-list-bullet">2</span><span>Provide customer support and respond to service inquiries.</span></div>
-            <div className="page-list-item"><span className="page-list-bullet">3</span><span>Send important transactional notifications related to orders and account activity.</span></div>
-            <div className="page-list-item"><span className="page-list-bullet">4</span><span>Improve site performance, merchandising, and user experience.</span></div>
-            <div className="page-list-item"><span className="page-list-bullet">5</span><span>Deliver marketing updates only when you have given consent.</span></div>
+        <section className={cardMuted}>
+          <p className={kicker}>Get in touch</p>
+          <h2 className={sectionH2}>Privacy contact</h2>
+          <p className={`${body} mt-3`}>If you have questions about how your information is handled, use the same contact details as on our Contact page.</p>
+          <div className="mt-6 space-y-4 rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 text-sm">
+              <span className="text-slate-500">Email</span>
+              <a href={CONTACT_EMAIL_HREF} className="shrink-0 break-all text-right text-sm font-semibold text-slate-950 hover:underline">
+                {CONTACT_EMAIL}
+              </a>
+            </div>
+            <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3 text-sm">
+              <span className="text-slate-500">Phone</span>
+              <a href={CONTACT_PHONE_TEL} className="font-semibold text-slate-950 hover:underline">
+                {CONTACT_PHONE}
+              </a>
+            </div>
+            <div>
+              <p className="text-sm text-slate-500">Address</p>
+              <p className="mt-1 text-sm font-semibold text-slate-950">{CONTACT_ADDRESS}</p>
+            </div>
           </div>
-        </section>
-
-        <section className="page-card">
-          <h2 className="page-card-title">Sharing and security</h2>
-          <p className="page-copy">
-            Preordify does not sell or rent customer data. Information may be shared only with trusted service providers, payment processors,
-            logistics partners, or when required by law. We protect data using SSL encryption, access controls, secure payment processing,
-            and internal security practices designed to reduce unauthorized access.
-          </p>
-        </section>
-
-        <section className="page-grid">
-          <section className="page-card">
-            <h2 className="page-card-title">Your rights</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="font-semibold text-slate-900">Access and update</p>
-                <p className="mt-1 text-sm text-slate-600">You can review and update your account information at any time.</p>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-900">Deletion requests</p>
-                <p className="mt-1 text-sm text-slate-600">You may request deletion of your personal information, subject to operational and legal requirements.</p>
-              </div>
-              <div>
-                <p className="font-semibold text-slate-900">Marketing opt-out</p>
-                <p className="mt-1 text-sm text-slate-600">You can unsubscribe from promotional communications whenever you choose.</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="page-dark-card">
-            <h2 className="text-2xl font-bold">Privacy contact</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-300">
-              If you have questions about how your information is handled, contact the Preordify privacy team.
-            </p>
-            <div className="mt-6 space-y-3 text-sm">
-              <div><span className="page-contact-label">Email:</span> privacy@preordify.com</div>
-              <div><span className="page-contact-label">Phone:</span> 07019277357</div>
-              <div><span className="page-contact-label">Address:</span> Lagos, Nigeria</div>
-            </div>
-          </section>
-        </section>
-
-        <section className="page-card-muted text-center">
-          <h2 className="page-card-title">Policy updates</h2>
-          <p className="page-copy max-w-3xl mx-auto">
-            This policy may be updated from time to time to reflect operational, legal, or platform changes. Updated versions will be posted on this page.
-          </p>
-          <p className="mt-4 text-sm text-slate-500">Last updated: January 14, 2026</p>
         </section>
       </div>
-    </div>
+
+      <section className={`${cardMuted} text-center`}>
+        <h2 className={sectionH2}>Policy updates</h2>
+        <p className={`${body} mx-auto mt-4 max-w-2xl`}>
+          This policy may be updated from time to time to reflect operational, legal, or platform changes. Updated versions will be posted
+          on this page.
+        </p>
+        <p className="mt-4 text-sm text-slate-500">Last updated: April 23, 2026</p>
+      </section>
+    </ContentPageShell>
   );
 };
 

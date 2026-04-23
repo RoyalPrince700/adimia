@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { SITE_NAME, CONTACT_PHONE, CONTACT_EMAIL, CONTACT_EMAIL_HREF } from '../constants/siteContact';
+import ContentPageShell, { sectionH2, body, card, cardMuted, defaultPolicyPrimary, defaultPolicySecondary } from '../components/ContentPageShell';
 
 const Support = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -22,7 +24,7 @@ const Support = () => {
     },
     {
       question: 'What should I do if I have an issue with my order?',
-      answer: 'Contact us at 08168831108 or email us at Imisiadigun@gmail.com, and we’ll assist you promptly.',
+      answer: `Contact us at ${CONTACT_PHONE} or email us at ${CONTACT_EMAIL}, and we will assist you promptly.`,
     },
   ];
 
@@ -31,52 +33,53 @@ const Support = () => {
   };
 
   return (
-    <div className="page-shell max-w-5xl">
-      <header className="page-header">
-        <span className="page-kicker">Support Center</span>
-        <h1 className="page-title">Help for orders, delivery, and account questions.</h1>
-        <p className="page-subtitle">
-          Adimia support is designed to keep shoppers informed with quick answers, clear next steps, and direct contact options.
-        </p>
-      </header>
-
-      <div className="page-card">
-        <h2 className="page-card-title">Frequently asked support questions</h2>
-        <div className="space-y-4">
+    <ContentPageShell
+      eyebrow="Support"
+      headline="Help for orders, delivery, and account"
+      subhead={`${SITE_NAME} support is designed to keep shoppers informed with quick answers, clear next steps, and direct contact options.`}
+      primaryCta={defaultPolicyPrimary}
+      secondaryCta={defaultPolicySecondary}
+      imageTagLeft="Help center"
+      imageTagRight="We reply fast"
+    >
+      <section className={card}>
+        <h2 className={sectionH2}>Frequently asked support questions</h2>
+        <div className="mt-6 space-y-4">
           {faqs.map((faq, index) => (
-            <div key={index} className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
+            <div key={faq.question} className="rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-4">
               <button
-                className="flex w-full items-center justify-between text-left text-base font-semibold text-slate-900"
+                type="button"
+                className="flex w-full items-center justify-between text-left text-base font-semibold text-slate-900 transition-colors hover:text-slate-600 focus:outline-none"
                 onClick={() => toggleFaq(index)}
               >
                 <span className="pr-4">{faq.question}</span>
-                <span className="text-xl text-amber-600">{activeIndex === index ? '−' : '+'}</span>
+                <span className="text-xl text-slate-400">{activeIndex === index ? '−' : '+'}</span>
               </button>
-              {activeIndex === index && (
-                <p className="mt-3 text-sm leading-7 text-slate-600">{faq.answer}</p>
-              )}
+              {activeIndex === index && <p className="mt-3 text-sm leading-7 text-slate-600">{faq.answer}</p>}
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      <section className="page-dark-card mt-6">
-        <h2 className="text-2xl font-bold">Contact Adimia support</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-          Reach out for help with order issues, preorder timing, payments, or tracking updates.
-        </p>
+      <section className={cardMuted}>
+        <h2 className={sectionH2}>Contact {SITE_NAME} support</h2>
+        <p className={`${body} mt-3`}>Reach out for help with order issues, payments, or tracking updates.</p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-300">Phone</p>
-            <a href="tel:08168831108" className="mt-2 block text-lg font-semibold text-white">08168831108</a>
+          <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Phone</p>
+            <a href={`tel:${CONTACT_PHONE}`} className="mt-2 block text-lg font-semibold text-slate-950 hover:underline">
+              {CONTACT_PHONE}
+            </a>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-300">Email</p>
-            <a href="mailto:Imisiadigun@gmail.com" className="mt-2 block text-lg font-semibold text-white">Imisiadigun@gmail.com</a>
+          <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Email</p>
+            <a href={CONTACT_EMAIL_HREF} className="mt-2 block break-all text-lg font-semibold text-slate-950 hover:underline">
+              {CONTACT_EMAIL}
+            </a>
           </div>
         </div>
       </section>
-    </div>
+    </ContentPageShell>
   );
 };
 

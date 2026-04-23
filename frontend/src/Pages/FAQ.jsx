@@ -1,4 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  SITE_NAME,
+  CONTACT_PHONE,
+  CONTACT_PHONE_TEL,
+  CONTACT_EMAIL,
+  CONTACT_EMAIL_HREF,
+  SUPPORT_HOURS,
+} from '../constants/siteContact';
+import ContentPageShell, { sectionH2, body, card, cardMuted, defaultPolicyPrimary } from '../components/ContentPageShell';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -21,7 +31,7 @@ const FAQ = () => {
         },
         {
           question: "Can I modify my order after placing it?",
-          answer: "Orders can be modified within 1 hour of placement. Please contact us immediately at 07019277357 to make changes."
+          answer: `Orders can be modified within 1 hour of placement. Please contact us immediately at ${CONTACT_PHONE} to make changes.`
         }
       ]
     },
@@ -95,19 +105,19 @@ const FAQ = () => {
   };
 
   return (
-    <div className="page-shell">
-      <header className="page-header">
-        <span className="page-kicker">Support Center</span>
-        <h1 className="page-title">Frequently Asked Questions</h1>
-        <p className="page-subtitle">
-          Quick answers about ordering, payments, shipping, returns, and product quality on Preordify.
-        </p>
-      </header>
-
-      <div className="space-y-8">
+    <ContentPageShell
+      eyebrow="Support"
+      headline="Frequently asked questions"
+      subhead={`Quick answers about ordering, payments, shipping, returns, and product quality on ${SITE_NAME}.`}
+      primaryCta={defaultPolicyPrimary}
+      secondaryCta={{ to: '/product-category', children: 'Shop products' }}
+      imageTagLeft="Quick answers"
+      imageTagRight="Real support"
+    >
+      <div className="space-y-6">
         {faqCategories.map((category, categoryIndex) => (
-          <section key={categoryIndex} className="page-card">
-            <h2 className="mb-6 border-b border-slate-200 pb-4 text-2xl font-bold text-slate-900">
+          <section key={category.title} className={card}>
+            <h2 className="mb-6 border-b border-slate-200 pb-4 text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-3xl">
               {category.title}
             </h2>
 
@@ -115,18 +125,22 @@ const FAQ = () => {
               {category.faqs.map((faq, faqIndex) => {
                 const globalIndex = `${categoryIndex}-${faqIndex}`;
                 return (
-                  <div key={faqIndex} className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
+                  <div
+                    key={faq.question}
+                    className="rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-4"
+                  >
                     <button
-                      className="flex w-full items-center justify-between text-left font-semibold text-slate-900 transition-colors hover:text-amber-700 focus:outline-none"
+                      type="button"
+                      className="flex w-full items-center justify-between text-left text-base font-semibold text-slate-900 transition-colors hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 rounded-lg"
                       onClick={() => toggleFaq(globalIndex)}
                     >
                       <span className="pr-4">{faq.question}</span>
-                      <span className="flex-shrink-0 text-xl font-bold text-amber-600">
+                      <span className="flex-shrink-0 text-xl font-bold text-slate-400">
                         {activeIndex === globalIndex ? '−' : '+'}
                       </span>
                     </button>
                     {activeIndex === globalIndex && (
-                      <div className="mt-4 rounded-xl bg-white p-4 text-sm leading-7 text-slate-600">
+                      <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 text-sm leading-7 text-slate-600">
                         {faq.answer}
                       </div>
                     )}
@@ -138,39 +152,56 @@ const FAQ = () => {
         ))}
       </div>
 
-      <section className="page-dark-card mt-8">
-        <h2 className="text-2xl font-bold mb-4 text-center">Still Have Questions?</h2>
-        <p className="mb-6 text-center opacity-80">
-          Can't find what you're looking for? Our customer service team is here to help.
+      <section className={cardMuted}>
+        <h2 className={`${sectionH2} text-center`}>Still have questions?</h2>
+        <p className={`${body} mt-3 text-center`}>
+          Can&apos;t find what you&apos;re looking for? Reach us using the same details as on our{' '}
+          <Link to="/contact-us" className="font-semibold text-slate-950 underline underline-offset-2 hover:text-slate-600">
+            Contact
+          </Link>{' '}
+          page.
         </p>
-        <div className="grid md:grid-cols-3 gap-6 text-center">
-          <div>
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-slate-950">
-              <span className="font-bold text-xl">📞</span>
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {[
+            {
+              title: 'Call us',
+              sub: SUPPORT_HOURS,
+              node: (
+                <a href={CONTACT_PHONE_TEL} className="mt-1 block font-semibold text-slate-950 hover:underline">
+                  {CONTACT_PHONE}
+                </a>
+              ),
+              icon: '📞',
+            },
+            {
+              title: 'Email us',
+              sub: 'We reply as soon as we can',
+              node: (
+                <a href={CONTACT_EMAIL_HREF} className="mt-1 block break-all font-semibold text-slate-950 hover:underline">
+                  {CONTACT_EMAIL}
+                </a>
+              ),
+              icon: '✉️',
+            },
+            {
+              title: 'Social and messages',
+              sub: 'TikTok and Instagram — links on Contact',
+              node: null,
+              icon: '💬',
+            },
+          ].map((col) => (
+            <div key={col.title} className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-lg">
+                {col.icon}
+              </div>
+              <h3 className="font-semibold text-slate-900">{col.title}</h3>
+              {col.node ? <div className="mt-1 text-sm">{col.node}</div> : null}
+              <p className={`text-sm text-slate-500 ${col.node ? 'mt-2' : 'mt-1'}`}>{col.sub}</p>
             </div>
-            <h3 className="font-semibold mb-2">Call Us</h3>
-            <p className="opacity-80">07019277357</p>
-            <p className="text-sm opacity-60">Mon-Fri 9AM-6PM</p>
-          </div>
-          <div>
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-slate-950">
-              <span className="font-bold text-xl">✉️</span>
-            </div>
-            <h3 className="font-semibold mb-2">Email Us</h3>
-            <p className="opacity-80">support@preordify.com</p>
-            <p className="text-sm opacity-60">24/7 response</p>
-          </div>
-          <div>
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-slate-950">
-              <span className="font-bold text-xl">💬</span>
-            </div>
-            <h3 className="font-semibold mb-2">Live Chat</h3>
-            <p className="opacity-80">Available on website</p>
-            <p className="text-sm opacity-60">Mon-Sat 9AM-8PM</p>
-          </div>
+          ))}
         </div>
       </section>
-    </div>
+    </ContentPageShell>
   );
 };
 
