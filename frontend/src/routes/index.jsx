@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import Login from "../Pages/Login";
 import Home from "../Pages/Home";
@@ -44,6 +44,8 @@ import SalesPage from "../Pages/SalesPage";
 import AdminOrderPage from "../Pages/AdminOrderPage";
 import AssignedOrders from "../Pages/AssignedOrders";
 import NotificationsPage from "../Pages/NotificationPage";
+import AccountLayout from "../Pages/AccountLayout";
+import AccountProfilePage from "../Pages/AccountProfilePage";
 
 const router = createBrowserRouter([
     {
@@ -138,11 +140,30 @@ const router = createBrowserRouter([
                 element: <SearchProduct />,
             },
             {
+                path: "account",
+                element: <AccountLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <AccountProfilePage />,
+                    },
+                    {
+                        path: "orders",
+                        element: <OrderPage />,
+                    },
+                    {
+                        path: "notifications",
+                        element: <NotificationsPage />,
+                    },
+                ],
+            },
+            {
                 path: "order",
-                element: <OrderPage />,
-            }, {
+                element: <Navigate to="/account/orders" replace />,
+            },
+            {
                 path: "notifications",
-                element: <NotificationsPage />,
+                element: <Navigate to="/account/notifications" replace />,
             },
              {
                 path: "payondeliveryorder",

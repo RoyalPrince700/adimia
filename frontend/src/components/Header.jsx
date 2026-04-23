@@ -11,6 +11,7 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import { PiShoppingCartSimpleBold } from "react-icons/pi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoMdArrowDropdown } from "react-icons/io";
+import Logo from "./Logo";
 
 const navItems = [
   { label: "Home", to: "/" },
@@ -75,11 +76,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full">
       <div className="w-full border border-slate-200/80 bg-white/90 px-4 py-3 shadow-none backdrop-blur-xl sm:px-6 sm:shadow-[0_16px_50px_rgba(15,23,42,0.08)] lg:px-16">
         <div className="flex items-center justify-between gap-4">
-          <Link to="/" className="shrink-0">
-            <span className="select-none text-xl font-extrabold tracking-tight text-slate-950 sm:text-2xl">
-              Adimia
-            </span>
-          </Link>
+          <Logo />
 
           <nav className="hidden items-center gap-2 lg:flex">
             {navItems.map((item) => (
@@ -126,7 +123,7 @@ const Header = () => {
                     type="button"
                     onClick={() => {
                       setMenuDisplay(false);
-                      navigate(user ? "/notifications" : "/login");
+                      navigate(user ? "/account" : "/login");
                     }}
                     className="w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"
                   >
@@ -136,7 +133,7 @@ const Header = () => {
                     type="button"
                     onClick={() => {
                       setMenuDisplay(false);
-                      navigate(user ? "/order" : "/login");
+                      navigate(user ? "/account/orders" : "/login");
                     }}
                     className="w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"
                   >
@@ -208,11 +205,10 @@ const Header = () => {
           }`}
         >
           <div className="mb-8 flex items-center justify-between">
-            <Link to="/" className="shrink-0" onClick={() => setVisible(false)}>
-              <span className="select-none text-lg font-extrabold tracking-tight text-slate-950">
-                Adimia
-              </span>
-            </Link>
+            <Logo
+              imgClassName="h-7 w-auto max-w-[120px] object-contain object-left sm:h-8 sm:max-w-[140px]"
+              onClick={() => setVisible(false)}
+            />
             <button
               type="button"
               onClick={() => setVisible(false)}
@@ -256,7 +252,7 @@ const Header = () => {
               type="button"
               onClick={() => {
                 setVisible(false);
-                navigate(user ? "/notifications" : "/login");
+                navigate(user ? "/account" : "/login");
               }}
               className="rounded-2xl bg-slate-50 px-4 py-4 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
             >
@@ -266,7 +262,7 @@ const Header = () => {
               type="button"
               onClick={() => {
                 setVisible(false);
-                navigate(user ? "/order" : "/login");
+                navigate(user ? "/account/orders" : "/login");
               }}
               className="rounded-2xl bg-slate-50 px-4 py-4 text-left text-base font-medium text-slate-700 transition hover:bg-slate-100"
             >
@@ -315,10 +311,7 @@ const Header = () => {
           </div>
 
           <div className="mt-auto rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Adimia
-            </p>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="text-sm leading-6 text-slate-600">
               Clean shopping for modern tech essentials with a polished browsing experience.
             </p>
           </div>

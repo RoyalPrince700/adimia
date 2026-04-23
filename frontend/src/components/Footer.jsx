@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaTwitter, FaInstagram } from 'react-icons/fa';
+import { FaTiktok, FaInstagram } from 'react-icons/fa';
 import Logo from './Logo';
 
 const Footer = () => {
@@ -17,17 +17,19 @@ const Footer = () => {
               </p>
               <div className="mt-6 flex items-center gap-3 text-lg text-slate-600">
                 <a
-                  href="https://x.com/mytechofficial"
+                  href="https://www.tiktok.com/@adimia.world"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Adimia on TikTok"
                   className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white transition hover:border-slate-300 hover:text-slate-950"
                 >
-                  <FaTwitter />
+                  <FaTiktok />
                 </a>
                 <a
-                  href="https://www.instagram.com/mytechofficial/"
+                  href="https://www.instagram.com/adimia.worldwide/"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Adimia on Instagram"
                   className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white transition hover:border-slate-300 hover:text-slate-950"
                 >
                   <FaInstagram />
@@ -56,8 +58,8 @@ const Footer = () => {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Contact</p>
               <div className="mt-5 space-y-4 text-sm text-slate-600">
-                <p>09075799282</p>
-                <p>adimiaofficial@gmail.com</p>
+                <p>08168831108</p>
+                <p>Imisiadigun@gmail.com</p>
                 <p>Always here to help with orders, questions, and product support.</p>
               </div>
             </div>

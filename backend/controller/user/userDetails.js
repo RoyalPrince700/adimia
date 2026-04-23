@@ -4,7 +4,11 @@ const userModel = require('../../models/userModel'); // Adjust path from control
 async function userDetailsController(req, res){
     try{
             console.log("userId",req.userId)
-         const user = await userModel.findById(req.userId)
+         const user = await userModel
+            .findById(req.userId)
+            .select(
+              '-password -verificationToken -verificationTokenExpiresAt -resetPasswordToken -resetPasswordExpiresAt'
+            );
 
          res.status(200).json({
             data : user,

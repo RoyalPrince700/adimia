@@ -31,7 +31,12 @@ const userSchema = new mongoose.Schema(
     location: {
       type: String,
       default: 'Not Specified', // Default location
-    },isVerified: {
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    isVerified: {
 			type: Boolean,
 			default: false,
 		},

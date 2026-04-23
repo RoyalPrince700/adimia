@@ -22,7 +22,7 @@ const Support = () => {
     },
     {
       question: 'What should I do if I have an issue with my order?',
-      answer: 'Contact us at 09075799282 or email us at adimiaofficial@gmail.com, and we’ll assist you promptly.',
+      answer: 'Contact us at 08168831108 or email us at Imisiadigun@gmail.com, and we’ll assist you promptly.',
     },
   ];
 
@@ -68,11 +68,11 @@ const Support = () => {
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-300">Phone</p>
-            <a href="tel:09075799282" className="mt-2 block text-lg font-semibold text-white">09075799282</a>
+            <a href="tel:08168831108" className="mt-2 block text-lg font-semibold text-white">08168831108</a>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-300">Email</p>
-            <a href="mailto:adimiaofficial@gmail.com" className="mt-2 block text-lg font-semibold text-white">adimiaofficial@gmail.com</a>
+            <a href="mailto:Imisiadigun@gmail.com" className="mt-2 block text-lg font-semibold text-white">Imisiadigun@gmail.com</a>
           </div>
         </div>
       </section>

@@ -64,7 +64,7 @@ const Success = () => {
       </p>
       
       {!loading && (
-        <Link to={"/order"} className='p-2 px-3 font-semibold
+        <Link to={"/account/orders"} className='p-2 px-3 font-semibold
              text-green-600 rounded border-2 border-green-600 mt-3
              hover:bg-green-600 hover:text-white '>See Order</Link>
       )}

@@ -58,6 +58,7 @@ const createNotification = require('../controller/notifications/createNotificati
 const getNotifications = require('../controller/notifications/getNotification');
 const markAsRead = require('../controller/notifications/markAsRead');
 const countUnreadNotifications = require('../controller/user/countNotification');
+const updateProfile = require('../controller/user/updateProfile');
 const notifyAdminsOnOrder = require('../controller/order/notifyAdminsOnOrder');
 const { upload, uploadImage } = require('../controller/uploadImage');
 
@@ -71,6 +72,7 @@ const verifyPaymentController = require('../controller/order/verifyPaymentContro
 router.get("/auth/google", googleAuth);
 router.get("/auth/google/callback", googleAuthCallback);
 router.get("/user-details", authToken, userDetailsController);
+router.post("/update-profile", authToken, updateProfile);
 router.get("/userLogout", userLogout);
 router.post("/verify-email", verifyEmailController)
 router.post("/forgot-password", forgotPassword)

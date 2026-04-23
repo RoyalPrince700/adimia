@@ -1,177 +1,98 @@
-import React, { useContext, useState } from 'react';
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
+import React, { useContext } from 'react';
+import { FcGoogle } from 'react-icons/fc';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import SummaryApi from '../common';
 import Context from '../context';
-import LogoImg from '../assets/wifmartlogo.png';
+import Logo from '../components/Logo';
+
+const perks = [
+  'Your bag and preferences stay in sync after you sign in.',
+  'Checkout stays fast with saved details on supported orders.',
+  'Order updates stay visible in your account when they are available.',
+];
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [data, setData] = useState({
-    email: "",
-    password: ""
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
-  const { fetchUserDetails, fetchUserAddToCart, signInWithGoogle } = useContext(Context);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true); // Disable button on submit
-  
-    try {
-      const response = await fetch(SummaryApi.signIn.url, {
-        method: SummaryApi.signIn.method,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-  
-      if (response.ok && result.success) {
-        toast.success(result.message);
-        fetchUserDetails();
-        fetchUserAddToCart();
-        navigate("/"); // Redirect to homepage
-      } else if (result.redirect) {
-        // Redirect for unverified email
-        toast.warning(result.message || "Redirecting to verification...");
-        navigate("/token-verification"); // Redirect to the token page
-      } else {
-        toast.error(result.message || "An error occurred. Please try again.");
-      }
-    } catch (error) {
-      toast.error("Network error. Please try again later.");
-    } finally {
-      setIsSubmitting(false); // Re-enable button
-    }
-  };
-  
-  
+  const { signInWithGoogle } = useContext(Context);
 
   return (
-    <section id="login">
-    <div
-      className="mx-auto h-[100vh] flex items-center justify-center p-4 bg-gradient-to-br from-white to-gray-50 text-black"
+    <section
+      id="login"
+      className="min-h-screen bg-white px-4 py-10 sm:mt-6 sm:px-8 lg:mt-2 lg:px-16"
     >
-    
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="backdrop-blur-md bg-white/80 mx-auto p-6 w-full max-w-md rounded-lg shadow-xl border border-gray-200"
-      >
-         <div className="flex justify-center mb-8">
-        <Link to="/">
-          <img src={LogoImg} alt="Ronniesfabrics" className="w-[120px] h-[20px] object-contain select-none" draggable={false} />
-        </Link>
-      </div>
-        <p className="text-center text-gray-600 mb-6">Access your account</p>
-  
-        <div className="space-y-4">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={signInWithGoogle}
-            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-md shadow-md border border-gray-300 transition-all"
-          >
-            <FcGoogle className="text-2xl" />
-            Continue with Google
-          </motion.button>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-7xl items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="w-full max-w-lg"
+        >
+          <div className="overflow-hidden rounded-[36px] border border-slate-200/80 bg-[linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(248,250,252,0.95)_45%,_rgba(241,245,249,0.98))] shadow-[0_30px_120px_rgba(15,23,42,0.10)]">
+            <div className="border-b border-slate-200/80 px-8 pb-8 pt-10 sm:px-10 sm:pt-12">
+              <div className="flex justify-center">
+                <Logo imgClassName="h-9 w-auto max-w-[160px] object-contain object-center sm:h-10 sm:max-w-[180px]" />
+              </div>
+              <p className="mt-8 text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Welcome back
+              </p>
+              <h1 className="mt-3 text-center text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-3xl">
+                Sign in to Adimia
+              </h1>
+              <p className="mx-auto mt-3 max-w-sm text-center text-sm leading-7 text-slate-600">
+                One quick sign-in with Google and you are back to browsing watches, phones, and earbuds with the same
+                clean experience as the home page.
+              </p>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Sign in restricted to Google</span>
+
+            <div className="px-8 py-8 sm:px-10">
+              <ul className="mb-8 space-y-3 text-sm leading-6 text-slate-600">
+                {perks.map((line) => (
+                  <li key={line} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-slate-900" aria-hidden />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={signInWithGoogle}
+                className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-300 hover:border-slate-300 hover:bg-slate-50 hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)]"
+              >
+                <FcGoogle className="text-2xl" aria-hidden />
+                Continue with Google
+              </motion.button>
+
+              <p className="mt-5 text-center text-xs leading-6 text-slate-500">
+                Sign-in is limited to Google so we can verify your account securely. We only use the profile details
+                needed to run the store and your orders.
+              </p>
+
+              <p className="mt-8 text-center text-sm text-slate-600">
+                New to Adimia?{' '}
+                <Link
+                  to="/sign-up"
+                  className="font-semibold text-slate-950 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-950"
+                >
+                  Create an account
+                </Link>
+              </p>
+
+              <p className="mt-6 text-center">
+                <Link
+                  to="/"
+                  className="text-sm font-medium text-slate-500 transition hover:text-slate-950"
+                >
+                  ← Back to shopping
+                </Link>
+              </p>
             </div>
           </div>
-
-          {/* Manual login commented out as requested */}
-          {/* 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-black">Email:</label>
-              <input
-                type="email"
-                placeholder="Enter email"
-                name="email"
-                value={data.email}
-                onChange={handleChange}
-                className="w-full p-3 rounded-md bg-gray-100 text-black focus:outline-none focus:ring-2 focus:ring-yellow-500 border border-gray-300"
-                required
-              />
-            </div>
-    
-            <div>
-              <label className="block mb-2 text-sm font-medium text-black">Password:</label>
-              <div className="flex items-center bg-gray-100 p-3 rounded-md border border-gray-300">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={data.password}
-                  onChange={handleChange}
-                  placeholder="Enter password"
-                  className="w-full bg-transparent text-black focus:outline-none"
-                  required
-                />
-                <div
-                  className="cursor-pointer text-xl ml-3 text-gray-600"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </div>
-              </div>
-              <Link
-                to="/forgot-password"
-                className="block mt-2 text-sm text-black hover:underline hover:text-black text-right"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-    
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-md shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 disabled:opacity-50"
-            >
-              {isSubmitting ? "Logging in..." : "Login"}
-            </motion.button>
-          </form>
-          */}
-        </div>
-  
-        <p className="mt-5 text-center text-black">
-          Don't have an account?{" "}
-          <Link
-            to="/sign-up"
-            className="text-black hover:underline hover:text-black"
-          >
-            Sign Up
-          </Link>
-        </p>
-      </motion.div>
-    </div>
-  </section>
-  
+        </motion.div>
+      </div>
+    </section>
   );
 };
 
 export default Login;
-

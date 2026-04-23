@@ -21,7 +21,7 @@ const getUserOrders = async (req, res) => {
         path: "cartItems.productId",
         select: "productName productImage sellingPrice sellerName sellerBrandName sellerPhoneNumber"
       })
-      .populate("userId", "name number address email"); // Populate user details
+      .populate("userId", "fullName email phone avatarUrl"); // Populate user details
 
     // Log the fetched data for debugging
     console.log("Orders fetched for user:", JSON.stringify(userOrders, null, 2));

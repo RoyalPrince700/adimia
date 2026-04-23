@@ -165,8 +165,8 @@ const Cart = () => {
         <div className="bg-white px-0 pb-10 pt-0 sm:px-8 sm:pt-[24px] lg:px-16 lg:pt-[24px]">
             <section className="mx-auto max-w-7xl">
                 <div className="overflow-hidden rounded-none border border-b border-x-0 border-t-0 border-slate-200/80 bg-[linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(248,250,252,0.95)_45%,_rgba(241,245,249,0.98))] shadow-none sm:rounded-[36px] sm:border sm:shadow-[0_30px_120px_rgba(15,23,42,0.10)]">
-                    <div className="grid gap-8 px-6 py-8 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-14 lg:py-12">
-                        <div>
+                    <div className="grid min-w-0 gap-8 px-6 py-8 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-14 lg:py-12">
+                        <div className="min-w-0">
                             <div className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                                 <span className="h-2 w-2 rounded-full bg-slate-900"></span>
                                 Your cart
@@ -181,17 +181,17 @@ const Cart = () => {
                             </p>
                         </div>
 
-                        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                            <div className="rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
+                        <div className="grid min-w-0 gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
                                 <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{data.length}</p>
                                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Products</p>
                             </div>
-                            <div className="rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
+                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
                                 <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{totalQty}</p>
                                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Items total</p>
                             </div>
-                            <div className="rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
-                                <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">
+                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
+                                <p className="break-words text-2xl font-semibold tabular-nums tracking-[-0.04em] text-slate-950">
                                     {displayNARCurrency(totalPrice)}
                                 </p>
                                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Order value</p>
@@ -201,8 +201,8 @@ const Cart = () => {
                 </div>
             </section>
 
-            <section className="mx-auto mt-10 flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-start">
-                <div className="w-full max-w-4xl">
+            <section className="mx-auto mt-10 flex min-w-0 max-w-7xl flex-col gap-8 lg:flex-row lg:items-start">
+                <div className="w-full min-w-0 max-w-4xl">
                     {!loading && data.length === 0 && (
                         <div className="rounded-[32px] border border-slate-200 bg-slate-50/80 px-6 py-10 text-center sm:px-10">
                             <h2 className="text-2xl font-semibold tracking-[-0.03em] text-slate-950">
@@ -299,11 +299,11 @@ const Cart = () => {
                 </div>
 
                 {(loading || data[0]) && (
-                    <div className="w-full lg:sticky lg:top-28 lg:max-w-sm">
+                    <div className="w-full min-w-0 lg:sticky lg:top-28 lg:max-w-sm">
                         {loading ? (
                             <div className="h-72 animate-pulse rounded-[30px] border border-slate-200 bg-slate-100"></div>
                         ) : (
-                            <div className="rounded-[32px] border border-slate-200 bg-slate-50/80 p-6 shadow-sm">
+                            <div className="min-w-0 rounded-[32px] border border-slate-200 bg-slate-50/80 p-6 shadow-sm">
                                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                                     Order summary
                                 </p>
@@ -311,18 +311,18 @@ const Cart = () => {
                                     Ready when you are.
                                 </h2>
 
-                                <div className="mt-6 space-y-4 rounded-[24px] border border-slate-200 bg-white p-5">
-                                    <div className="flex items-center justify-between text-sm text-slate-500">
-                                        <p>Products</p>
-                                        <p className="font-semibold text-slate-900">{data.length}</p>
+                                <div className="mt-6 min-w-0 space-y-4 rounded-[24px] border border-slate-200 bg-white p-5">
+                                    <div className="flex items-center justify-between gap-3 text-sm text-slate-500">
+                                        <p className="shrink-0">Products</p>
+                                        <p className="min-w-0 text-right font-semibold text-slate-900">{data.length}</p>
                                     </div>
-                                    <div className="flex items-center justify-between text-sm text-slate-500">
-                                        <p>Quantity</p>
-                                        <p className="font-semibold text-slate-900">{totalQty}</p>
+                                    <div className="flex items-center justify-between gap-3 text-sm text-slate-500">
+                                        <p className="shrink-0">Quantity</p>
+                                        <p className="min-w-0 text-right font-semibold text-slate-900">{totalQty}</p>
                                     </div>
-                                    <div className="flex items-center justify-between border-t border-slate-200 pt-4 text-sm text-slate-500">
-                                        <p>Total price</p>
-                                        <p className="text-lg font-semibold text-slate-950">
+                                    <div className="flex min-w-0 items-start justify-between gap-3 border-t border-slate-200 pt-4 text-sm text-slate-500">
+                                        <p className="shrink-0">Total price</p>
+                                        <p className="min-w-0 shrink break-words text-right text-lg font-semibold tabular-nums text-slate-950">
                                             {displayNARCurrency(totalPrice)}
                                         </p>
                                     </div>

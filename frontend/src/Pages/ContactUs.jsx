@@ -16,7 +16,7 @@ const ContactUs = () => {
         eyebrow="Contact"
         headline="We would love to hear from you."
         subhead="Send a message about an order, a product, or anything else. Prefer voice? Call us directly—we are ready to help."
-        primaryCta={{ href: 'tel:09075799282', children: 'Call 09075799282' }}
+        primaryCta={{ href: 'tel:08168831108', children: 'Call 08168831108' }}
         secondaryCta={{ to: '/cart', children: 'View your cart' }}
         showStats={false}
         imageTagLeft="Quick replies"
@@ -88,18 +88,39 @@ const ContactUs = () => {
             <div className="mt-6 space-y-4 rounded-[24px] border border-slate-200 bg-white p-5">
               <div className="flex items-center justify-between text-sm text-slate-500">
                 <p>Phone</p>
-                <a href="tel:09075799282" className="font-semibold text-slate-950 hover:underline">
-                  09075799282
+                <a href="tel:08168831108" className="font-semibold text-slate-950 hover:underline">
+                  08168831108
                 </a>
               </div>
               <div className="border-t border-slate-200 pt-4">
                 <p className="text-sm text-slate-500">Email</p>
                 <a
-                  href="mailto:adimiaofficial@gmail.com"
+                  href="mailto:Imisiadigun@gmail.com"
                   className="mt-1 block break-all text-sm font-semibold text-slate-950 hover:underline"
                 >
-                  adimiaofficial@gmail.com
+                  Imisiadigun@gmail.com
                 </a>
+              </div>
+              <div className="border-t border-slate-200 pt-4">
+                <p className="text-sm text-slate-500">Social</p>
+                <div className="mt-2 flex flex-col gap-2 text-sm font-semibold text-slate-950">
+                  <a
+                    href="https://www.tiktok.com/@adimia.world"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    TikTok — @adimia.world
+                  </a>
+                  <a
+                    href="https://www.instagram.com/adimia.worldwide/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    Instagram — @adimia.worldwide
+                  </a>
+                </div>
               </div>
             </div>
 

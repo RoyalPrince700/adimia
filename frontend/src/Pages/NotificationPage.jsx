@@ -1,4 +1,3 @@
-// NotificationPage.js
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import SummaryApi from '../common';
@@ -8,7 +7,6 @@ const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch Notifications
   const fetchNotifications = async () => {
     setLoading(true);
     try {
@@ -31,7 +29,6 @@ const NotificationPage = () => {
     }
   };
 
-  // Mark Single Notification as Read
   const markAsRead = async (id) => {
     try {
       const response = await fetch(SummaryApi.markAsRead.url, {
@@ -43,11 +40,9 @@ const NotificationPage = () => {
       const result = await response.json();
 
       if (result.success) {
-        toast.success('Notification marked as read.');
+        toast.success('Marked as read.');
         setNotifications((prev) =>
-          prev.map((notif) =>
-            notif._id === id ? { ...notif, isRead: true } : notif
-          )
+          prev.map((notif) => (notif._id === id ? { ...notif, isRead: true } : notif))
         );
       } else {
         toast.error(result.message || 'Failed to mark notification as read.');
@@ -63,29 +58,38 @@ const NotificationPage = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 mt-[100px] lg:mt-[120px]">
-      <h1 className="text-2xl font-bold mb-5">Notifications</h1>
-      <div className="text-center text-lg">
-        {notifications.length === 0 && !loading && (
-          <p className="bg-white py-5 text-gray-500">No notifications available.</p>
-        )}
+    <div className="p-6 sm:p-8 lg:p-10">
+      <div className="border-b border-slate-100 pb-6">
+        <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-2xl">Notifications</h2>
+        <p className="mt-2 max-w-xl text-sm leading-7 text-slate-600">
+          Updates about your orders and account. Unread items are highlighted at a glance.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-6 gap-2">
-        {loading
-          ? Array.from({ length: 5 }, (_, index) => (
+      <div className="mt-8">
+        {loading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }, (_, index) => (
               <div
                 key={index}
-                className="w-full bg-slate-200 h-24 border border-slate-300 my-1 animate-pulse rounded"
-              ></div>
-            ))
-          : notifications.map((notification) => (
-              <NotificationItem
-                key={notification._id}
-                notification={notification}
-                markAsRead={markAsRead}
+                className="h-24 animate-pulse rounded-2xl border border-slate-100 bg-slate-100"
               />
             ))}
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50/80 px-6 py-14 text-center">
+            <p className="text-base font-medium text-slate-800">You are all caught up</p>
+            <p className="mt-2 text-sm text-slate-600">New notifications will appear here when something changes.</p>
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {notifications.map((notification) => (
+              <li key={notification._id}>
+                <NotificationItem notification={notification} markAsRead={markAsRead} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -71,17 +71,17 @@ const AboutUs = () => {
             <div className="mt-6 space-y-4 rounded-[24px] border border-slate-200 bg-white p-5">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Phone</p>
-                <a href="tel:09075799282" className="mt-1 block text-sm font-semibold text-slate-950 hover:underline">
-                  09075799282
+                <a href="tel:08168831108" className="mt-1 block text-sm font-semibold text-slate-950 hover:underline">
+                  08168831108
                 </a>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Email</p>
                 <a
-                  href="mailto:adimiaofficial@gmail.com"
+                  href="mailto:Imisiadigun@gmail.com"
                   className="mt-1 block break-all text-sm font-semibold text-slate-950 hover:underline"
                 >
-                  adimiaofficial@gmail.com
+                  Imisiadigun@gmail.com
                 </a>
               </div>
             </div>
