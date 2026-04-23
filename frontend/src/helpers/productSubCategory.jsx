@@ -1,0 +1,26 @@
+const productSubCategory = [
+    { id: 1, label: "Plain Cotton", value: "plain_cotton" },
+    { id: 2, label: "Patterned Silk", value: "patterned_silk" },
+    { id: 3, label: "Bridal Lace", value: "bridal_lace" },
+    { id: 4, label: "Stretch Velvet", value: "stretch_velvet" },
+    { id: 5, label: "Organic Linen", value: "organic_linen" },
+    { id: 6, label: "Embroidery Supplies", value: "embroidery_supplies" },
+    { id: 7, label: "Buttons & Fasteners", value: "buttons_fasteners" },
+    { id: 8, label: "Zippers", value: "zippers" },
+    { id: 9, label: "Needles & Thread", value: "needles_thread" },
+    { id: 10, label: "Tailoring Chalk", value: "tailoring_chalk" },
+    { id: 11, label: "Scissors & Cutters", value: "scissors_cutters" },
+    { id: 12, label: "Interlining", value: "interlining" },
+    { id: 13, label: "Lining Fabric", value: "lining_fabric" },
+    { id: 14, label: "Ribbons & Trimmings", value: "ribbons_trimmings" },
+    { id: 15, label: "Measuring Tapes", value: "measuring_tapes" },
+    { id: 16, label: "Ankara", value: "ankara" },
+    { id: 17, label: "Lace", value: "lace" },
+    { id: 18, label: "German Wool", value: "german_wool" },
+    { id: 19, label: "Damask", value: "damask" },
+    { id: 20, label: "Siron Spon", value: "siron_spon" },
+    { id: 21, label: "Vanety Swiss Voile", value: "vanety_swiss_voile" },
+    { id: 22, label: "Other Accessories", value: "other_accessories" },
+];
+
+export default productSubCategory;
