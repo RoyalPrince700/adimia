@@ -17,6 +17,8 @@ mongoose.connect(process.env.MONGODB_URI)
         process.exit(1); // Exit if unable to connect
     });
 
+const { getAllowedCorsOrigins } = require('./config/envUrls.js');
+
 const app = express();
 const server = createServer(app);
 
@@ -24,27 +26,12 @@ const server = createServer(app);
 const io = initializeSocket(server);
 
 // Middleware
+const allowedCorsOrigins = getAllowedCorsOrigins();
 const corsOptions = {
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        
-        const allowedOrigins = [
-            'https://www.ronniesfabrics.com',
-            'https://ronniesfabrics.com',
-            'https://ronniesfabrics.vercel.app',
-            'https://ronniesfabrics-backend.vercel.app', // Backend domain (in case of same-origin requests)
-            'http://localhost:5173',
-            'http://localhost:3000',
-            'http://localhost:8080'
-        ];
-        
-        // Add environment variable origin if it exists
-        if (process.env.FRONTEND_URL) {
-            allowedOrigins.push(process.env.FRONTEND_URL);
-        }
-        
-        if (allowedOrigins.includes(origin)) {
+        if (allowedCorsOrigins.includes(origin)) {
             callback(null, true);
         } else {
             console.log('CORS blocked origin:', origin);
@@ -62,15 +49,7 @@ app.use(cors(corsOptions));
 // Additional CORS headers middleware (backup)
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    const allowedOrigins = [
-        'https://www.ronniesfabrics.com',
-        'https://ronniesfabrics.com',
-        'https://ronniesfabrics.vercel.app',
-        'http://localhost:5173',
-        process.env.FRONTEND_URL
-    ].filter(Boolean);
-
-    if (allowedOrigins.includes(origin)) {
+    if (origin && allowedCorsOrigins.includes(origin)) {
         res.header('Access-Control-Allow-Origin', origin);
     }
     

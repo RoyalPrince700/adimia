@@ -1,16 +1,11 @@
 const { transporter, sender } = require('./mailtrap.config');
 const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, ORDER_NOTIFICATION_TEMPLATE, ORDER_CONFIRMATION_EMAIL_TEMPLATE, PAYMENT_SUCCESS_EMAIL_TEMPLATE, ORDER_STATUS_UPDATE_EMAIL_TEMPLATE } = require('./emailTemplates');
 
+const { getFrontendBaseUrl } = require('../config/envUrls.js');
+
 // Utility function to get the correct frontend URL
 const getFrontendUrl = () => {
-    const isProdLike =
-        process.env.NODE_ENV === 'production' ||
-        !!process.env.RENDER_EXTERNAL_URL ||
-        !!process.env.RENDER ||
-        !!process.env.VERCEL;
-
-    return process.env.FRONTEND_URL ||
-        (isProdLike ? 'https://www.ronniesfabrics.com' : 'http://localhost:5173');
+    return getFrontendBaseUrl() || '';
 };
 
 const logMailSend = (tag, mailOptions) => {

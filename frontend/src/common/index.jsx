@@ -1,11 +1,9 @@
 const backendDomain =
-  import.meta.env.VITE_APP_BACKEND_URI ||
-  (import.meta.env.DEV ? 'http://localhost:8080' : '');
+  import.meta.env.VITE_APP_BACKEND_URI || import.meta.env.VITE_DEV_BACKEND_URL || '';
 
 if (!backendDomain) {
-  // In production this MUST be configured (e.g. https://ronniesfabrics.onrender.com)
   console.error(
-    '[Config] Missing VITE_APP_BACKEND_URI. Set it in your deployment environment to your backend base URL.'
+    '[Config] Set VITE_APP_BACKEND_URI (production) or VITE_DEV_BACKEND_URL (local) to your API base URL.'
   );
 }
 

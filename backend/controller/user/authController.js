@@ -1,22 +1,16 @@
 const passport = require('passport');
+const { getFrontendBaseUrl } = require('../../config/envUrls.js');
 
 const googleAuth = passport.authenticate('google', {
   scope: ['profile', 'email'],
 });
 
 const googleAuthCallback = (req, res, next) => {
-  // IMPORTANT:
-  // This redirect is what sends users back to the frontend after Google OAuth.
-  // If FRONTEND_URL isn't set in production, we must NOT silently fall back to localhost.
-  const isProdLike =
-    process.env.NODE_ENV === 'production' ||
-    !!process.env.RENDER_EXTERNAL_URL ||
-    !!process.env.RENDER ||
-    !!process.env.VERCEL;
-
-  const frontendUrl =
-    process.env.FRONTEND_URL ||
-    (isProdLike ? 'https://www.ronniesfabrics.com' : 'http://localhost:5173');
+  const frontendUrl = getFrontendBaseUrl();
+  if (!frontendUrl) {
+    console.error('❌ [Auth] FRONTEND_URL is required in production for Google sign-in redirect');
+    return res.status(500).send('Server configuration error: FRONTEND_URL is not set');
+  }
 
   passport.authenticate('google', { session: false }, (err, data, info) => {
     if (err) {

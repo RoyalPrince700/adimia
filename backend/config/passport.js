@@ -3,6 +3,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/userModel.js');
 const { generateToken } = require('../middleware/auth.js');
 const { sendWelcomeEmail } = require('../mailtrap/emails.js');
+const { getGoogleOAuthCallbackUrl } = require('./envUrls.js');
 
 // Google OAuth Strategy
 passport.use(
@@ -10,24 +11,8 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      // Google should redirect back to the BACKEND callback route, not the frontend
-      callbackURL: (() => {
-        const backendBaseUrl =
-          process.env.BACKEND_URL ||
-          process.env.RENDER_EXTERNAL_URL ||
-          process.env.VERCEL_URL; // if you ever deploy backend on Vercel
-
-        if (backendBaseUrl) {
-          // Ensure scheme exists (some providers expose host only)
-          const normalized =
-            backendBaseUrl.startsWith('http://') || backendBaseUrl.startsWith('https://')
-              ? backendBaseUrl
-              : `https://${backendBaseUrl}`;
-          return `${normalized.replace(/\/$/, '')}/api/auth/google/callback`;
-        }
-
-        return 'http://localhost:8080/api/auth/google/callback';
-      })(),
+      // Google redirects to the backend callback; URL comes from BACKEND_URL / RENDER / Vercel (see envUrls)
+      callbackURL: getGoogleOAuthCallbackUrl(),
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

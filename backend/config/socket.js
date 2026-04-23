@@ -1,18 +1,10 @@
-// filepath: /c:/Users/HP/Desktop/ecom/ronniesfabrics/backend/config/socket.js
 const { Server } = require('socket.io');
+const { getAllowedCorsOrigins } = require('./envUrls.js');
 
 const initializeSocket = (server) => {
     const io = new Server(server, {
         cors: {
-            origin: [
-                'https://www.ronniesfabrics.com',
-                'https://ronniesfabrics.com',
-                'https://ronniesfabrics.vercel.app',
-                'http://localhost:5173',
-                'http://localhost:3000',
-                'http://localhost:8080',
-                process.env.FRONTEND_URL
-            ].filter(Boolean),
+            origin: getAllowedCorsOrigins(),
             credentials: true,
         }
     });

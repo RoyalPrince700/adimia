@@ -93,10 +93,11 @@ function App() {
   }, [notificationCount]);
 
   const signInWithGoogle = useCallback(() => {
-    const backendBase = import.meta.env.VITE_APP_BACKEND_URI;
+    const backendBase =
+      import.meta.env.VITE_APP_BACKEND_URI || import.meta.env.VITE_DEV_BACKEND_URL;
     if (!backendBase) {
       console.error(
-        '[Auth] Missing VITE_APP_BACKEND_URI. Cannot start Google sign-in without the backend base URL.'
+        '[Auth] Set VITE_APP_BACKEND_URI (or VITE_DEV_BACKEND_URL) to your API base URL for Google sign-in.'
       );
       return;
     }

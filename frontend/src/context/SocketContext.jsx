@@ -20,8 +20,7 @@ export const SocketProvider = ({ children }) => {
     useEffect(() => {
         // Initialize socket connection
         const backendBase =
-            import.meta.env.VITE_APP_BACKEND_URI ||
-            (import.meta.env.DEV ? 'http://localhost:8080' : '');
+            import.meta.env.VITE_APP_BACKEND_URI || import.meta.env.VITE_DEV_BACKEND_URL || '';
 
         if (!backendBase) {
             console.error(
