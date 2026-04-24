@@ -18,9 +18,9 @@ const AllProducts = () => {
   }, []);
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Header with Upload button */}
-      <div className="bg-white py-2 px-4 flex mt-28 justify-between items-center shadow-sm border-b border-gray-200">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
         <h2 className="font-bold text-lg text-gray-800">All Products</h2>
         <button
           className="border-2 hover:text-white transition-all 
@@ -34,8 +34,7 @@ const AllProducts = () => {
 
       {/* All Products Grid */}
       <div
-        className="flex flex-wrap gap-5 py-4 h-[calc(100vh-200px)] 
-        overflow-y-scroll bg-gray-50 px-4"
+        className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] content-start gap-5 bg-gray-50 px-4 py-4"
       >
         {allProduct.length > 0 ? (
           allProduct.map((product, index) => (

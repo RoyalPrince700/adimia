@@ -157,7 +157,7 @@ const Collection = () => {
                 Elevated product discovery
               </div>
 
-              <div className="relative w-full rounded-[32px] bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.95),_rgba(226,232,240,0.85)_58%,_rgba(203,213,225,0.70))] p-6 sm:p-8">
+              <div className="relative w-full">
                 {featuredHeroProduct?.productImage?.[0] ? (
                   <img
                     className="relative z-[1] h-full min-h-[280px] w-full object-contain drop-shadow-[0_24px_48px_rgba(15,23,42,0.18)]"

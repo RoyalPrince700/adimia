@@ -27,13 +27,13 @@ const HeroCta = ({ cta, variant }) => {
 };
 
 const defaultStats = [
-  { value: '3', label: 'Categories' },
+  { value: 'Tech + Fashion', label: 'Collections' },
   { value: '30+', label: 'Products' },
   { value: '100%', label: 'Visual-first' },
 ];
 
 const Hero = ({
-  eyebrow = 'Shop smart tech',
+  eyebrow = 'Tech and fashion, curated',
   headline,
   subhead,
   primaryCta,
@@ -41,7 +41,7 @@ const Hero = ({
   showStats = true,
   customStats = defaultStats,
   imageSrc = heroImg,
-  imageAlt = 'Premium tech collection',
+  imageAlt = 'Premium tech and fashion collection',
   showImageTags = true,
   imageTagLeft = 'Minimal product storytelling',
   imageTagRight = 'Refined browsing experience',
@@ -54,20 +54,20 @@ const Hero = ({
             <div className="relative">
               <div className="mb-4 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 backdrop-blur sm:mb-6">
                 <span className="h-2 w-2 rounded-full bg-slate-900"></span>
-                Shop smart tech
+                Tech and fashion, curated
               </div>
 
               <h1 className="max-w-2xl text-4xl font-semibold leading-[1.05] tracking-[-0.05em] text-slate-950 sm:text-5xl lg:text-6xl">
-                <span className="sm:hidden">Pick your device and get moving.</span>
+                <span className="sm:hidden">Shop standout tech and style in one place.</span>
                 <span className="hidden sm:inline">
-                  Modern devices, presented with a cleaner premium feel.
+                  Smart tech and fashion essentials, presented with a cleaner premium feel.
                 </span>
               </h1>
 
               <p className="mt-6 max-w-xl text-base leading-7 text-slate-500 sm:text-lg">
-                <span className="sm:hidden">Phones, watches, and earbuds without the extra talk.</span>
+                <span className="sm:hidden">Phones, fits, and everyday essentials without the extra noise.</span>
                 <span className="hidden sm:inline">
-                  Explore a refined mix of smart watches, mobile phones, and earbuds in a sleek
+                  Explore a refined mix of smartphones, accessories, and fashion pieces in a sleek
                   shopping experience built to feel polished, modern, and easy to trust.
                 </span>
               </p>

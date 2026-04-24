@@ -9,7 +9,7 @@ const AdminProductCard = ({ data, fetchdata }) => {
     const [deleteProduct, setDeleteProduct] = useState(false); // State for managing delete modal visibility
 
     return (
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 w-48 hover:shadow-md transition-all">
+        <div className="w-full self-start rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
             {/* Product Image */}
             <div className="w-full h-32 flex justify-center items-center mb-2 overflow-hidden rounded-lg bg-gray-50">
                 <img

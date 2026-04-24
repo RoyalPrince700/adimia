@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { CgClose } from "react-icons/cg";  // Importing the close icon
 import productCategory from '../helpers/productCategory'  // Importing the product categories list from a helper file
 import productDeal from '../helpers/productDeal'  // Importing the product categories list from a helper file
-import productSubCategory from '../helpers/productSubCategory'  // Importing the product categories list from a helper file
+import { getProductSubCategoryOptions } from '../helpers/productSubCategory'  // Importing the product categories list from a helper file
 import productStatus from '../helpers/productStatus'  // Importing the product categories list from a helper file
 import { FaCloudUploadAlt } from "react-icons/fa";  // Importing the upload icon
 import uploadImage from '../helpers/uploadImages';  // Importing the image upload helper function
@@ -42,14 +42,17 @@ const UploadProduct = ({
   const handleOnChange = (e) => {
     const { name, value } = e.target
 
-    // Updating form data state
+    // Reset subcategory whenever the category changes.
     setData((preve) => {
       return {
         ...preve,
-        [name]: value
+        [name]: value,
+        ...(name === 'category' ? { subCategory: "" } : {})
       }
     })
   }
+
+  const availableSubCategories = getProductSubCategoryOptions(data.category)
 
   // Function to handle image file upload
   const handleUploadProduct = async (e) => {
@@ -185,10 +188,11 @@ const UploadProduct = ({
               <div className='flex flex-col gap-1 mt-1'>
                 <label htmlFor='subCategory' className='text-sm font-semibold text-gray-700'>Sub Category</label>
                 <select value={data.subCategory} name='subCategory' onChange={handleOnChange} 
+                disabled={!data.category}
                 className='p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-blue-500 focus:bg-white transition-all'>
                   <option value={""}>Select Sub Category</option>
                   {
-                    productSubCategory.map((el, index) => {
+                    availableSubCategories.map((el, index) => {
                       return (
                         <option value={el.value} key={el.value + index}>{el.label}</option>
                       )
