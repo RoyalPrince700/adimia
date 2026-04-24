@@ -6,6 +6,7 @@ import { setUserDetails } from "../store/userSlice";
 import SummaryApi from "../common";
 import ROLE from "../common/role";
 import Context from "../context";
+import { clearStoredAuthToken } from "../helpers/authStorage";
 import { GrSearch } from "react-icons/gr";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { PiShoppingCartSimpleBold } from "react-icons/pi";
@@ -52,6 +53,7 @@ const Header = () => {
     });
     const data = await fetchData.json();
     if (data.success) {
+      clearStoredAuthToken();
       toast.success(data.message);
       dispatch(setUserDetails(null));
       navigate("/");

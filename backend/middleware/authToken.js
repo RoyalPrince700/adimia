@@ -3,11 +3,14 @@ const jwt = require('jsonwebtoken')
 
 async function authToken(req,res,next){
     try{
-        const token = req.cookies?.token 
+        const authHeader = req.headers?.authorization || ''
+        const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
+        const cookieToken = req.cookies?.token
+        const token = bearerToken || cookieToken
 
             console.log("token",token)
         if(!token){
-            return res.status(200).json({
+            return res.status(401).json({
                 message : "Please Login...!",
                 error : true,
                 success : false
@@ -17,12 +20,16 @@ async function authToken(req,res,next){
             // verify a token symmetric
             jwt.verify(token,  process.env.TOKEN_SECRET_KEY, function(err, decoded) 
             {
-                console.log(err)
-                console.log("decocded", decoded)
-
                 if(err){
                     console.log("error auth", err)
+                    return res.status(401).json({
+                        message : "Unauthorized",
+                        error : true,
+                        success : false
+                    })
                 }
+
+                console.log("decocded", decoded)
                 req.userId = decoded?._id
                 req.userEmail = decoded?.email
 

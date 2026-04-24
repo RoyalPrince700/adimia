@@ -10,10 +10,15 @@ import Context from './context';
 // import { SocketProvider } from './context/SocketContext'; // WebSocket / Socket.IO disabled
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails } from './store/userSlice';
+import { installAuthFetchInterceptor } from './helpers/authFetch';
+import { clearStoredAuthToken } from './helpers/authStorage';
 import { getGuestCartLineCount } from './helpers/guestCart';
 import { mergeGuestCartToServer } from './helpers/mergeGuestCartToServer';
 import ScrollToTop from './components/ScrollTop';
 import { matchPath } from 'react-router-dom';
+
+installAuthFetchInterceptor();
+
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((s) => s.user.user);
@@ -38,6 +43,11 @@ function App() {
       const dataApi = await dataResponse.json();
       if (dataApi.success) {
         dispatch(setUserDetails(dataApi.data));
+      } else {
+        dispatch(setUserDetails(null));
+        if (dataResponse.status === 401 || dataResponse.status === 403) {
+          clearStoredAuthToken();
+        }
       }
     } catch (error) {
       console.error('Failed to fetch user details:', error.message);
@@ -134,7 +144,7 @@ function App() {
       fetchUserNotification,
       signInWithGoogle,
     }),
-    [cartProductCount, notificationCount, fetchUserAddToCart, fetchUserNotification, signInWithGoogle]
+    [fetchUserDetails, cartProductCount, notificationCount, fetchUserAddToCart, fetchUserNotification, signInWithGoogle]
   );
 
   return (

@@ -1,4 +1,4 @@
-const backendDomain =
+export const backendDomain =
   import.meta.env.VITE_APP_BACKEND_URI || import.meta.env.VITE_DEV_BACKEND_URL || '';
 
 if (!backendDomain) {

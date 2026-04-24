@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Context from '../context';
+import { clearStoredAuthToken, setStoredAuthToken } from '../helpers/authStorage';
 import { mergeGuestCartToServer } from '../helpers/mergeGuestCartToServer';
 
 function AuthCallback() {
@@ -15,6 +16,7 @@ function AuthCallback() {
     const handleAuth = async () => {
       if (token) {
         try {
+          setStoredAuthToken(token);
           await fetchUserDetails();
           await mergeGuestCartToServer();
           await fetchUserAddToCart();
@@ -27,9 +29,11 @@ function AuthCallback() {
           }
         } catch (error) {
           console.error('Auth callback error:', error);
+          clearStoredAuthToken();
           navigate('/login');
         }
       } else {
+        clearStoredAuthToken();
         navigate('/login');
       }
     };
