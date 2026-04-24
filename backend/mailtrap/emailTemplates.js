@@ -1,321 +1,214 @@
-const VERIFICATION_EMAIL_TEMPLATE = `
-<!DOCTYPE html>
+/**
+ * HTML email styles aligned with the storefront (Cart, ProductDetails, ProductGridCard):
+ * slate neutrals, soft card shadows, rounded-2xl feel, amber accent — table layout for client support.
+ */
+
+const outerOpen = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify Your Email</title>
+  <title>`;
+
+const outerMid = `</title>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(to right, #4B5563, #1F2937); padding: 20px; text-align: center;">
-    <h1 style="color: white; margin: 0;">Verify Your Email</h1>
-  </div>
-  <div style="background-color: #F3F4F6; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <p>Hello,</p>
-    <p>Thank you for signing up! Your verification code is:</p>
-    <div style="text-align: center; margin: 30px 0;">
-      <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1F2937;">{verificationCode}</span>
-    </div>
-    <p>Enter this code on the verification page to complete your registration.</p>
-    <p>This code will expire in 15 minutes for security reasons.</p>
-    <p>If you didn't create an account with us, please ignore this email.</p>
-    <p>Best regards,<br>The Adimia World Team</p>
-  </div>
-  <div style="text-align: center; margin-top: 20px; color: #6B7280; font-size: 0.8em;">
-    <p>This is an automated message, please do not reply to this email.</p>
-  </div>
-</body>
-</html>
-`;
-
-const PASSWORD_RESET_SUCCESS_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Reset Successful</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(to right, #4B5563, #1F2937); padding: 20px; text-align: center;">
-    <h1 style="color: white; margin: 0;">Password Reset Successful</h1>
-  </div>
-  <div style="background-color: #F3F4F6; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <p>Hello,</p>
-    <p>We're writing to confirm that your password has been successfully reset.</p>
-    <div style="text-align: center; margin: 30px 0;">
-      <div style="background-color: #4B5563; color: white; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; display: inline-block; font-size: 30px;">
-        ✓
-      </div>
-    </div>
-    <p>If you did not initiate this password reset, please contact our support team immediately.</p>
-    <p>Thank you for helping us keep your account secure.</p>
-    <p>Best regards,<br>The Adimia World Team</p>
-  </div>
-  <div style="text-align: center; margin-top: 20px; color: #6B7280; font-size: 0.8em;">
-    <p>This is an automated message, please do not reply to this email.</p>
-  </div>
-</body>
-</html>
-`;
-
-const PASSWORD_RESET_REQUEST_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reset Your Password</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(to right, #4B5563, #1F2937); padding: 20px; text-align: center;">
-    <h1 style="color: white; margin: 0;">Password Reset</h1>
-  </div>
-  <div style="background-color: #F3F4F6; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <p>Hello,</p>
-    <p>We received a request to reset your password. If you didn't make this request, please ignore this email.</p>
-    <p>To reset your password, click the button below:</p>
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="{resetURL}" style="background-color: #4B5563; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
-    </div>
-    <p>This link will expire in 1 hour for security reasons.</p>
-    <p>Best regards,<br>The Adimia World Team</p>
-  </div>
-  <div style="text-align: center; margin-top: 20px; color: #6B7280; font-size: 0.8em;">
-    <p>This is an automated message, please do not reply to this email.</p>
-  </div>
-</body>
-</html>
-`;
-
-const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Confirmation</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(to right, #4B5563, #1F2937); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; }
-    .content { background-color: #F9FAFB; padding: 20px; border-radius: 0 0 8px 8px; }
-    .order-details { background: white; padding: 15px; border-radius: 5px; margin: 20px 0; }
-    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-    th { background-color: #F3F4F6; font-weight: bold; }
-    .total { font-weight: bold; color: #1F2937; }
-    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>Order Confirmed!</h1>
-    <p>Thank you for your order, {name}!</p>
-  </div>
-
-  <div class="content">
-    <div class="order-details">
-      <h3>Order Details</h3>
-      <p><strong>Order ID:</strong> {orderId}</p>
-      <p><strong>Delivery Address:</strong> {address}</p>
-      <p><strong>Payment Method:</strong> {paymentMethod}</p>
-      <p><strong>Note:</strong> {note}</p>
-
-      <h4>Items Ordered</h4>
-      <table>
-        <thead>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f8fafc;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width:600px;border-collapse:collapse;">
           <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Unit Price</th>
-            <th>Total</th>
+            <td style="padding:0 0 24px 0;text-align:center;">
+              <span style="font-size:20px;font-weight:700;letter-spacing:-0.04em;color:#0f172a;">Adimia World</span>
+              <div style="height:3px;width:64px;background-color:#f59e0b;margin:10px auto 0;border-radius:999px;"></div>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {itemsRows}
-        </tbody>
-      </table>
+          <tr>
+            <td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(15,23,42,0.08);">`;
 
-      <div class="total">
-        <p><strong>Total Amount: {total}</strong></p>
-      </div>
-    </div>
-
-    <p>We'll process your order shortly and send you updates on the delivery status.</p>
-    <p>If you have any questions, feel free to contact our support team.</p>
-
-    <p>Best regards,<br>The Adimia World Team</p>
-  </div>
-
-  <div class="footer">
-    <p>This is an automated message from Adimia World. Please do not reply to this email.</p>
-  </div>
-</body>
-</html>
-`;
-
-const PAYMENT_SUCCESS_EMAIL_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Successful</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(to right, #10B981, #059669); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; }
-    .content { background-color: #F0FDF4; padding: 20px; border-radius: 0 0 8px 8px; }
-    .payment-details { background: white; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #10B981; }
-    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #E5E7EB; }
-    th { background-color: #F3F4F6; font-weight: bold; }
-    .total { font-weight: bold; color: #059669; font-size: 18px; }
-    .success-icon { font-size: 48px; color: #10B981; text-align: center; margin: 10px 0; }
-    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div class="success-icon">✓</div>
-    <h1>Payment Successful!</h1>
-    <p>Your payment has been processed successfully</p>
-  </div>
-
-  <div class="content">
-    <div class="payment-details">
-      <h3>Payment Details</h3>
-      <p><strong>Transaction ID:</strong> {transactionId}</p>
-      <p><strong>Payment Method:</strong> {paymentMethod}</p>
-      <p><strong>Amount Paid:</strong> <span class="total">₦{amount}</span></p>
-      <p><strong>Payment Date:</strong> {paymentDate}</p>
-
-      {orderDetails}
-
-      <p><strong>Status:</strong> <span style="color: #10B981; font-weight: bold;">Payment Completed Successfully</span></p>
-    </div>
-
-    <p>Thank you for your payment! Your order is now being processed.</p>
-    <p>You will receive updates on your order status via email and in-app notifications.</p>
-
-    <p>Best regards,<br>The Adimia World Team</p>
-  </div>
-
-  <div class="footer">
-    <p>This is an automated message from Adimia World. Please do not reply to this email.</p>
-  </div>
-</body>
-</html>
-`;
-
-const ORDER_NOTIFICATION_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Order Notification</title>
-  <style>
-    table { width: 100%; border-collapse: collapse; }
-    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e5e7eb; }
-    th { background: #f9fafb; }
-  </style>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827; max-width: 700px; margin: 0 auto; padding: 20px;">
-  <h2 style="margin-top: 0;">New Order Placed</h2>
-  <p>A customer just initiated an order. Here are the details:</p>
-
-  <h3>Customer</h3>
-  <p>
-    <strong>Name:</strong> {name}<br/>
-    <strong>Phone:</strong> {number}<br/>
-    <strong>Address:</strong> {address}<br/>
-    <strong>Note:</strong> {note}
-  </p>
-
-  <h3>Items</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Qty</th>
-        <th>Price</th>
-        <th>Link</th>
-      </tr>
-    </thead>
-    <tbody>
-      {itemsRows}
-    </tbody>
+const outerClose = `
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 8px 0 8px;text-align:center;">
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b;">This is an automated message from Adimia World. Please do not reply to this email.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
   </table>
-
-  <p>
-    <strong>Payment Method:</strong> {paymentMethod}<br/>
-    <strong>Total:</strong> {total}
-  </p>
-
-  <p style="color:#6b7280; font-size: 12px;">This message was sent automatically by Adimia World backend.</p>
 </body>
-</html>
-`;
+</html>`;
 
-const ORDER_STATUS_UPDATE_EMAIL_TEMPLATE = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Status Update - Adimia World</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
-    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .header { background: linear-gradient(to right, #3B82F6, #1D4ED8); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px; }
-    .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 12px; margin: 10px 0; }
-    .status-pending { background-color: #FEF3C7; color: #92400E; }
-    .status-processing { background-color: #DBEAFE; color: #1E40AF; }
-    .status-shipped { background-color: #D1FAE5; color: #065F46; }
-    .status-delivered { background-color: #10B981; color: #FFFFFF; }
-    .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
-    .order-details { background: #F8FAFC; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3B82F6; }
-    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
-    .action-button { display: inline-block; padding: 12px 24px; background-color: #3B82F6; color: white; text-decoration: none; border-radius: 6px; margin: 10px 0; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>📦 Order Status Update</h1>
-      <p>Your order status has been updated</p>
-    </div>
+const contentPadding = 'padding:32px 28px 28px 28px;';
+const pBase = 'margin:0 0 16px 0;font-size:15px;line-height:1.65;color:#475569;';
+const h1 = 'margin:0 0 8px 0;font-size:22px;font-weight:700;letter-spacing:-0.03em;color:#0f172a;';
+const muted = 'color:#64748b;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;';
 
-    <div class="order-details">
-      <h3>Order Information</h3>
-      <p><strong>Order ID:</strong> {orderId}</p>
-      <p><strong>Order Date:</strong> {orderDate}</p>
-      <p><strong>Status:</strong> <span class="status-badge status-{statusClass}">{status}</span></p>
-    </div>
+const VERIFICATION_EMAIL_TEMPLATE = `${outerOpen}Verify Your Email${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Account</p>
+                <h1 style="${h1}">Verify your email</h1>
+                <p style="${pBase}">Thank you for signing up! Your verification code is:</p>
+                <div style="text-align:center;margin:28px 0;padding:20px 16px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;">
+                  <span style="font-size:32px;font-weight:700;letter-spacing:0.3em;color:#0f172a;">{verificationCode}</span>
+                </div>
+                <p style="${pBase}">Enter this code on the verification page to complete your registration.</p>
+                <p style="${pBase}">This code will expire in 15 minutes for security reasons.</p>
+                <p style="${pBase}">If you didn&apos;t create an account with us, you can ignore this email.</p>
+                <p style="margin:24px 0 0 0;font-size:15px;line-height:1.65;color:#475569;">Best regards,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+              </div>
+${outerClose}`;
 
-    <div style="background: #F0F9FF; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0EA5E9;">
-      <h4 style="margin-top: 0; color: #0F172A;">What's Next?</h4>
-      {nextSteps}
-    </div>
+const PASSWORD_RESET_SUCCESS_TEMPLATE = `${outerOpen}Password Reset Successful${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Security</p>
+                <h1 style="${h1}">Password updated</h1>
+                <p style="${pBase}">We&apos;re writing to confirm that your password has been successfully reset.</p>
+                <div style="text-align:center;margin:28px 0;">
+                  <div style="display:inline-block;width:56px;height:56px;line-height:56px;border-radius:50%;background-color:#0f172a;color:#ffffff;font-size:28px;font-weight:700;">&#10003;</div>
+                </div>
+                <p style="${pBase}">If you did not initiate this password reset, please contact our support team immediately.</p>
+                <p style="${pBase}">Thank you for helping us keep your account secure.</p>
+                <p style="margin:24px 0 0 0;font-size:15px;line-height:1.65;color:#475569;">Best regards,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+              </div>
+${outerClose}`;
 
-    <p>You can track your order and view all updates in your account dashboard.</p>
+const PASSWORD_RESET_REQUEST_TEMPLATE = `${outerOpen}Reset Your Password${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Security</p>
+                <h1 style="${h1}">Reset your password</h1>
+                <p style="${pBase}">We received a request to reset your password. If you didn&apos;t make this request, you can ignore this email.</p>
+                <p style="${pBase}">To set a new password, use the button below.</p>
+                <div style="text-align:center;margin:28px 0;">
+                  <a href="{resetURL}" style="display:inline-block;padding:14px 28px;background-color:#0f172a;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(15,23,42,0.12);">Reset password</a>
+                </div>
+                <p style="${pBase}">This link will expire in 1 hour for security reasons.</p>
+                <p style="margin:24px 0 0 0;font-size:15px;line-height:1.65;color:#475569;">Best regards,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+              </div>
+${outerClose}`;
 
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="{frontendUrl}/order" class="action-button">View My Orders</a>
-    </div>
+const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `${outerOpen}Order Confirmation${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Order</p>
+                <h1 style="${h1}">Order confirmed</h1>
+                <p style="margin:0 0 20px 0;font-size:16px;color:#0f172a;">Thank you for your order, <strong style="color:#0f172a;">{name}</strong>.</p>
+                <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:20px 18px;margin:0 0 20px 0;">
+                  <h2 style="margin:0 0 14px 0;font-size:14px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Order details</h2>
+                  <p style="margin:0 0 10px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Order ID:</strong> {orderId}</p>
+                  <p style="margin:0 0 10px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Delivery address:</strong> {address}</p>
+                  <p style="margin:0 0 10px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Payment method:</strong> {paymentMethod}</p>
+                  <p style="margin:0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Note:</strong> {note}</p>
+                </div>
+                <h2 style="margin:0 0 12px 0;font-size:14px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Items ordered</h2>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:0 0 16px 0;">
+                  <thead>
+                    <tr>
+                      <th align="left" style="padding:12px 14px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Product</th>
+                      <th align="center" style="padding:12px 10px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Qty</th>
+                      <th align="right" style="padding:12px 14px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Unit</th>
+                      <th align="right" style="padding:12px 14px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itemsRows}
+                  </tbody>
+                </table>
+                <div style="text-align:right;padding:12px 0 0 0;border-top:1px solid #e2e8f0;">
+                  <p style="margin:0;font-size:18px;font-weight:700;letter-spacing:-0.02em;color:#0f172a;">Total: {total}</p>
+                </div>
+                <p style="margin:20px 0 0 0;${pBase}">We&apos;ll process your order shortly and keep you updated on delivery.</p>
+                <p style="${pBase}">Questions? Reach out to our support team anytime.</p>
+                <p style="margin:24px 0 0 0;font-size:15px;line-height:1.65;color:#475569;">Best regards,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+              </div>
+${outerClose}`;
 
-    <p>If you have any questions about your order, please don't hesitate to contact our support team.</p>
+const PAYMENT_SUCCESS_EMAIL_TEMPLATE = `${outerOpen}Payment Successful${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Payment</p>
+                <div style="text-align:center;margin-bottom:12px;">
+                  <div style="display:inline-block;width:56px;height:56px;line-height:56px;border-radius:16px;background-color:#ecfdf3;color:#059669;font-size:28px;font-weight:700;">&#10003;</div>
+                </div>
+                <h1 style="${h1}text-align:center;">Payment received</h1>
+                <p style="margin:0 0 20px 0;font-size:15px;line-height:1.65;color:#475569;text-align:center;">Your payment was processed successfully.</p>
+                <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #10b981;border-radius:12px;padding:20px 18px;margin:0 0 20px 0;">
+                  <h2 style="margin:0 0 12px 0;font-size:14px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Payment details</h2>
+                  <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Transaction ID:</strong> {transactionId}</p>
+                  <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Payment method:</strong> {paymentMethod}</p>
+                  <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Amount paid:</strong> <span style="font-size:18px;font-weight:700;color:#047857;">&#8358;{amount}</span></p>
+                  <p style="margin:0 0 12px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Date:</strong> {paymentDate}</p>
+                  {orderDetails}
+                  <p style="margin:0;font-size:14px;color:#047857;font-weight:600;">Status: completed</p>
+                </div>
+                <p style="${pBase}">Thank you! Your order is now being processed. You&apos;ll get updates by email as things move along.</p>
+                <p style="margin:24px 0 0 0;font-size:15px;line-height:1.65;color:#475569;">Best regards,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+              </div>
+${outerClose}`;
 
-    <p>Best regards,<br>The Adimia World Team</p>
-  </div>
+const ORDER_NOTIFICATION_TEMPLATE = `${outerOpen}New Order${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Admin</p>
+                <h1 style="${h1}">New order placed</h1>
+                <p style="${pBase}">A customer just submitted an order. Details below.</p>
+                <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:20px 18px;margin:0 0 20px 0;">
+                  <h2 style="margin:0 0 12px 0;font-size:14px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Customer</h2>
+                  <p style="margin:0;font-size:14px;line-height:1.7;color:#475569;">
+                    <strong style="color:#0f172a;">Name:</strong> {name}<br/>
+                    <strong style="color:#0f172a;">Phone:</strong> {number}<br/>
+                    <strong style="color:#0f172a;">Address:</strong> {address}<br/>
+                    <strong style="color:#0f172a;">Note:</strong> {note}
+                  </p>
+                </div>
+                <h2 style="margin:0 0 12px 0;font-size:14px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Items</h2>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:0 0 16px 0;">
+                  <thead>
+                    <tr>
+                      <th align="left" style="padding:12px 14px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Product</th>
+                      <th align="center" style="padding:12px 10px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Qty</th>
+                      <th align="right" style="padding:12px 14px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Price</th>
+                      <th align="left" style="padding:12px 14px;background-color:#f1f5f9;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;">Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itemsRows}
+                  </tbody>
+                </table>
+                <p style="margin:0;font-size:15px;line-height:1.65;color:#0f172a;">
+                  <strong>Payment method:</strong> {paymentMethod}<br/>
+                  <strong>Total:</strong> {total}
+                </p>
+                <p style="margin:20px 0 0 0;font-size:12px;color:#94a3b8;">This message was sent automatically by the Adimia World backend.</p>
+              </div>
+${outerClose}`;
 
-  <div class="footer">
-    <p>This is an automated message from Adimia World. Please do not reply to this email.</p>
-    <p>Need help? Contact us at <a href="mailto:support@adimiaworld.com">support@adimiaworld.com</a></p>
-  </div>
-</body>
-</html>
-`;
+const ORDER_STATUS_UPDATE_EMAIL_TEMPLATE = `${outerOpen}Order Status${outerMid}
+              <div style="${contentPadding}">
+                <p style="${muted}margin-bottom:8px;">Orders</p>
+                <h1 style="${h1}">Order status update</h1>
+                <p style="margin:0 0 20px 0;font-size:15px;line-height:1.65;color:#475569;">Your order status has changed. Here&apos;s the latest.</p>
+                <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #f59e0b;border-radius:12px;padding:20px 18px;margin:0 0 20px 0;">
+                  <h2 style="margin:0 0 12px 0;font-size:14px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;">Order information</h2>
+                  <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Order ID:</strong> {orderId}</p>
+                  <p style="margin:0 0 12px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Order date:</strong> {orderDate}</p>
+                  <p style="margin:0;font-size:14px;color:#475569;">
+                    <strong style="color:#0f172a;">Status:</strong>
+                    {statusHtml}
+                  </p>
+                </div>
+                <div style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:20px 18px;margin:0 0 24px 0;">
+                  <h2 style="margin:0 0 10px 0;font-size:15px;font-weight:600;color:#0f172a;">What&apos;s next?</h2>
+                  <div style="font-size:14px;line-height:1.65;color:#475569;">{nextSteps}</div>
+                </div>
+                <p style="${pBase}">You can track your order and see updates in your account.</p>
+                <div style="text-align:center;margin:24px 0;">
+                  <a href="{frontendUrl}/order" style="display:inline-block;padding:14px 28px;background-color:#0f172a;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(15,23,42,0.12);">View my orders</a>
+                </div>
+                <p style="${pBase}">If you have any questions, our support team is here to help.</p>
+                <p style="margin:24px 0 0 0;font-size:15px;line-height:1.65;color:#475569;">Best regards,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+                <p style="margin:20px 0 0 0;padding-top:16px;border-top:1px solid #e2e8f0;font-size:13px;color:#64748b;">Need help? <a href="mailto:support@adimiaworld.com" style="color:#d97706;font-weight:600;text-decoration:none;">support@adimiaworld.com</a></p>
+              </div>
+${outerClose}`;
 
 module.exports = {
   VERIFICATION_EMAIL_TEMPLATE,

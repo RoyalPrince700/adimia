@@ -68,55 +68,55 @@ const sendWelcomeEmail = async (email, name = 'there') => {
         const personalizedGreeting = name !== 'there' ? `Hi ${name}!` : 'Hello there!';
         const frontendUrl = getFrontendUrl();
 
-        const html = `
-<!DOCTYPE html>
+        const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Adimia World!</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
-    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .header { background: linear-gradient(to right, #10B981, #059669); padding: 20px; text-align: center; color: white; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px; }
-    .welcome-icon { font-size: 48px; color: #10B981; text-align: center; margin: 10px 0; }
-    .cta-button { display: inline-block; padding: 12px 24px; background-color: #10B981; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-    .footer { text-align: center; color: #6B7280; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #E5E7EB; }
-  </style>
+  <title>Welcome to Adimia World</title>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <div class="welcome-icon">🎉</div>
-      <h1>Welcome to Adimia World!</h1>
-      <p>Your journey to great products starts here</p>
-    </div>
-
-    <h2>${personalizedGreeting}</h2>
-
-    <p>Thank you for joining the Adimia World community! We're thrilled to have you with us.</p>
-
-    <p>Here's what you can do to get started:</p>
-
-    <ul>
-      <li><strong>Browse our catalog</strong> - Discover products curated for you</li>
-      <li><strong>Shop by category</strong> - Find what you need quickly</li>
-      <li><strong>Track your orders</strong> - Real-time updates on your purchases and shipping status</li>
-      <li><strong>Manage your account</strong> - Update your profile and view your order history</li>
-    </ul>
-
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${frontendUrl}" class="cta-button">Start Exploring</a>
-    </div>
-
-    <p>If you have any questions, feel free to reach out to our support team. We're here to help!</p>
-
-    <p>Welcome aboard,<br>The Adimia World Team</p>
-  </div>
-
-  <div class="footer">
-    <p>This is an automated welcome message from Adimia World. Please do not reply to this email.</p>
-  </div>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f8fafc;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width:600px;border-collapse:collapse;">
+          <tr>
+            <td style="padding:0 0 24px 0;text-align:center;">
+              <span style="font-size:20px;font-weight:700;letter-spacing:-0.04em;color:#0f172a;">Adimia World</span>
+              <div style="height:3px;width:64px;background-color:#f59e0b;margin:10px auto 0;border-radius:999px;"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#ffffff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(15,23,42,0.08);">
+              <div style="padding:32px 28px 28px 28px;">
+                <p style="margin:0 0 8px 0;color:#64748b;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;">Welcome</p>
+                <h1 style="margin:0 0 8px 0;font-size:22px;font-weight:700;letter-spacing:-0.03em;color:#0f172a;">We&apos;re glad you&apos;re here</h1>
+                <p style="margin:0 0 20px 0;font-size:16px;font-weight:600;color:#0f172a;">${personalizedGreeting}</p>
+                <p style="margin:0 0 16px 0;font-size:15px;line-height:1.65;color:#475569;">Thank you for joining the Adimia World community&mdash;we&apos;re thrilled to have you with us.</p>
+                <p style="margin:0 0 10px 0;font-size:14px;font-weight:600;color:#0f172a;">Get started</p>
+                <ul style="margin:0 0 20px 0;padding:0 0 0 20px;font-size:15px;line-height:1.7;color:#475569;">
+                  <li style="margin-bottom:8px;"><strong style="color:#0f172a;">Browse the catalog</strong> &mdash; discover products curated for you</li>
+                  <li style="margin-bottom:8px;"><strong style="color:#0f172a;">Shop by category</strong> &mdash; find what you need quickly</li>
+                  <li style="margin-bottom:8px;"><strong style="color:#0f172a;">Track orders</strong> &mdash; updates on purchases and delivery</li>
+                  <li style="margin-bottom:0;"><strong style="color:#0f172a;">Your account</strong> &mdash; profile and order history</li>
+                </ul>
+                <div style="text-align:center;margin:28px 0 24px 0;">
+                  <a href="${frontendUrl}" style="display:inline-block;padding:14px 28px;background-color:#0f172a;color:#ffffff;text-decoration:none;border-radius:9999px;font-weight:600;font-size:15px;box-shadow:0 10px 30px rgba(15,23,42,0.12);">Start exploring</a>
+                </div>
+                <p style="margin:0 0 20px 0;font-size:15px;line-height:1.65;color:#475569;">Questions? Our support team is here to help.</p>
+                <p style="margin:0;font-size:15px;line-height:1.65;color:#475569;">Welcome aboard,<br><span style="color:#0f172a;font-weight:600;">The Adimia World Team</span></p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 8px 0 8px;text-align:center;">
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b;">This is an automated welcome message from Adimia World. Please do not reply to this email.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>`;
 
@@ -175,10 +175,10 @@ const sendResetSuccessfulEmail = async (email) => {
     }
 }
 
-module.exports = { sendVerificationEmail,sendWelcomeEmail,sendPasswordResetEmail,sendResetSuccessfulEmail};
-
 // Admin order notification
 const sendOrderNotificationEmail = async (recipients, payload) => {
+    const cell = (html, align = 'left', extra = '') =>
+        `<td align="${align}" style="padding:12px 14px;border-bottom:1px solid #e2e8f0;font-size:14px;color:#334155;vertical-align:middle;${extra}">${html}</td>`;
     const itemsRows = (payload.cartItems || [])
         .map((it) => {
             const productObj = it?.productId || {};
@@ -188,8 +188,19 @@ const sendOrderNotificationEmail = async (recipients, payload) => {
             const price = productObj?.sellingPrice || it?.price || '';
             const base = getFrontendUrl().replace(/\/$/, '');
             const url = id ? `${base}/product/${id}` : '';
-            const priceText = price !== '' ? price : '';
-            return `<tr><td>${name}</td><td>${qty}</td><td>${priceText}</td><td>${url ? `<a href="${url}">View</a>` : ''}</td></tr>`;
+            const priceText = price !== '' ? `₦${price}` : '—';
+            const link = url
+                ? `<a href="${url}" style="color:#d97706;font-weight:600;text-decoration:none;">View</a>`
+                : '—';
+            return `<tr>${cell(
+                name
+            )}${cell(
+                String(qty),
+                'center'
+            )}${cell(
+                priceText,
+                'right'
+            )}${cell(link)}</tr>`;
         })
         .join('');
 
@@ -223,15 +234,21 @@ const sendOrderNotificationEmail = async (recipients, payload) => {
 
 // User order confirmation email
 const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
+    const oCell = (html, align = 'left') =>
+        `<td align="${align}" style="padding:12px 14px;border-bottom:1px solid #e2e8f0;font-size:14px;color:#334155;vertical-align:middle;">${html}</td>`;
     const itemsRows = (payload.cartItems || [])
         .map((it) => {
             const productObj = it?.productId || {};
             const name = it?.name || productObj?.productName || productObj?.name || 'Item';
             const qty = it?.quantity || 1;
             const price = productObj?.sellingPrice || it?.price || '';
-            const priceText = price !== '' ? `₦${price}` : '';
-            const totalPrice = price * qty;
-            return `<tr><td>${name}</td><td>${qty}</td><td>${priceText}</td><td>₦${totalPrice}</td></tr>`;
+            const priceText = price !== '' ? `₦${price}` : '—';
+            const lineDisplay =
+                price !== '' ? `₦${Number(price) * qty}` : '—';
+            return `<tr>${oCell(name)}${oCell(String(qty), 'center')}${oCell(priceText, 'right')}${oCell(
+                lineDisplay,
+                'right'
+            )}</tr>`;
         })
         .join('');
 
@@ -266,9 +283,11 @@ const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
 // User payment success email
 const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
     const orderDetails = paymentData.orderId ? `
-      <h4>Order Information</h4>
-      <p><strong>Order ID:</strong> ${paymentData.orderId}</p>
-      <p><strong>Items:</strong> ${paymentData.itemCount || 'Multiple items'}</p>
+      <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;">Order</p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Order ID:</strong> ${paymentData.orderId}</p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Items:</strong> ${
+        paymentData.itemCount || 'Multiple items'
+      }</p>
     ` : '';
 
     const html = PAYMENT_SUCCESS_EMAIL_TEMPLATE
@@ -311,10 +330,14 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
     }
 
     const orderDetails = paymentData.orderId ? `
-      <h4>Order Information</h4>
-      <p><strong>Order ID:</strong> ${paymentData.orderId}</p>
-      <p><strong>Customer Email:</strong> ${paymentData.customerEmail || 'N/A'}</p>
-      <p><strong>Items:</strong> ${paymentData.itemCount || 'Multiple items'}</p>
+      <p style="margin:0 0 6px 0;font-size:13px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;">Order</p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Order ID:</strong> ${paymentData.orderId}</p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Customer email:</strong> ${
+        paymentData.customerEmail || 'N/A'
+      }</p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:#475569;"><strong style="color:#0f172a;">Items:</strong> ${
+        paymentData.itemCount || 'Multiple items'
+      }</p>
     ` : '';
 
     const html = PAYMENT_SUCCESS_EMAIL_TEMPLATE
@@ -344,15 +367,16 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
 
 // Order Status Update Email
 const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
-    const getStatusClass = (status) => {
-        const statusClasses = {
-            'Pending': 'pending',
-            'Processing': 'processing',
-            'Shipped': 'shipped',
-            'Delivered': 'delivered',
-            'Cancelled': 'cancelled'
+    const getStatusBadgeHtml = (status) => {
+        const styles = {
+            Pending: { bg: '#fef3c7', color: '#92400e' },
+            Processing: { bg: '#e0e7ff', color: '#3730a3' },
+            Shipped: { bg: '#d1fae5', color: '#065f46' },
+            Delivered: { bg: '#0f172a', color: '#ffffff' },
+            Cancelled: { bg: '#fee2e2', color: '#991b1b' }
         };
-        return statusClasses[status] || 'pending';
+        const s = styles[status] || styles.Pending;
+        return `<span style="display:inline-block;margin-left:8px;padding:6px 14px;border-radius:999px;font-weight:600;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;background-color:${s.bg};color:${s.color};">${status}</span>`;
     };
 
     const getNextSteps = (status) => {
@@ -369,10 +393,9 @@ const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
     const html = ORDER_STATUS_UPDATE_EMAIL_TEMPLATE
         .replace('{orderId}', orderData.orderId)
         .replace('{orderDate}', orderData.orderDate)
-        .replace('{status}', orderData.status)
-        .replace('{statusClass}', getStatusClass(orderData.status))
+        .replace('{statusHtml}', getStatusBadgeHtml(orderData.status))
         .replace('{nextSteps}', getNextSteps(orderData.status))
-        .replace('{frontendUrl}', getFrontendUrl());
+        .replace('{frontendUrl}', getFrontendUrl().replace(/\/$/, ''));
 
     try {
         const mailOptions = {
