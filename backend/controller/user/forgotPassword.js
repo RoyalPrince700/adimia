@@ -1,6 +1,7 @@
 const userModel = require("../../models/userModel");
 const crypto = require("crypto");
 const { sendPasswordResetEmail } = require("../../mailtrap/emails");
+const { getFrontendBaseUrl } = require("../../config/envUrls.js");
 
 async function forgotPassword(req, res) {
     const { email } = req.body;
@@ -29,7 +30,11 @@ async function forgotPassword(req, res) {
             console.log(`Reset token generated: ${resetToken}`);
 
             
-            await sendPasswordResetEmail(user.email, `${process.env.FRONTEND_URL}/reset-password/${resetToken}`);
+            const storefront = getFrontendBaseUrl();
+            await sendPasswordResetEmail(
+                user.email,
+                `${storefront}/reset-password/${resetToken}`
+            );
         } catch (emailError) {
             console.error("Error sending password reset email:", emailError);
             return res.status(500).json({ success: false, message: "Failed to send password reset email." });

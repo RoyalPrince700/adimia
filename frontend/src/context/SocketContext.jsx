@@ -1,6 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
-import { useSelector } from 'react-redux';
+/**
+ * Not mounted from App while Socket.IO is disabled. Kept for easy restore
+ * (re-add SocketProvider in App.jsx and uncomment io() below).
+ */
+import React, { createContext, useContext } from 'react';
+// import { io } from 'socket.io-client';
+// import { useSelector } from 'react-redux';
 
 const SocketContext = createContext();
 
@@ -12,63 +16,20 @@ export const useSocket = () => {
     return context;
 };
 
+/**
+ * Socket.IO client disabled (no WebSocket) — `socket` is always null.
+ * Re-enable by restoring the io() + useEffect logic from version control.
+ */
 export const SocketProvider = ({ children }) => {
-    const [socket, setSocket] = useState(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const user = useSelector((state) => state?.user?.user);
-
-    useEffect(() => {
-        // Initialize socket connection
-        const backendBase =
-            import.meta.env.VITE_APP_BACKEND_URI || import.meta.env.VITE_DEV_BACKEND_URL || '';
-
-        if (!backendBase) {
-            console.error(
-                '[Socket] Missing VITE_APP_BACKEND_URI. Socket connection will not be initialized in production.'
-            );
-            return;
-        }
-
-        const socketConnection = io(backendBase, {
-            withCredentials: true,
-        });
-
-        socketConnection.on('connect', () => {
-            console.log('Connected to server:', socketConnection.id);
-            setIsConnected(true);
-
-            // Join user-specific room if user is logged in
-            if (user?._id) {
-                socketConnection.emit('join-user-room', user._id);
-                console.log('Joined user room:', user._id);
-            }
-        });
-
-        socketConnection.on('disconnect', () => {
-            console.log('Disconnected from server');
-            setIsConnected(false);
-        });
-
-        setSocket(socketConnection);
-
-        // Cleanup on unmount
-        return () => {
-            socketConnection.disconnect();
-        };
-    }, [user?._id]);
-
-    // Re-join room when user changes
-    useEffect(() => {
-        if (socket && user?._id && isConnected) {
-            socket.emit('join-user-room', user._id);
-            console.log('Re-joined user room:', user._id);
-        }
-    }, [socket, user?._id, isConnected]);
+    // const [socket, setSocket] = useState(null);
+    // const [isConnected, setIsConnected] = useState(false);
+    // const user = useSelector((state) => state?.user?.user);
+    // useEffect(() => { ... io(backendBase) ... }, [user?._id]);
 
     const value = {
-        socket,
-        isConnected,
-        userId: user?._id,
+        socket: null,
+        isConnected: false,
+        userId: null,
     };
 
     return (

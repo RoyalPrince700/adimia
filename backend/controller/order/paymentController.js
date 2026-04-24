@@ -1,5 +1,6 @@
 const flw = require('../../config/flutterwave')
 const userModel = require('../../models/userModel')
+const { getFrontendBaseUrl } = require('../../config/envUrls.js')
 
 const paymentController = async(request,response)=>{
 
@@ -13,12 +14,14 @@ const paymentController = async(request,response)=>{
                 return sum + (item.productId.sellingPrice * item.quantity)
             }, 0)
 
+            const storefront = getFrontendBaseUrl()
+
             // Prepare payment payload for Flutterwave
             const payload = {
                 tx_ref: `ronniesfabrics-${Date.now()}-${request.userId}`,
                 amount: totalAmount,
                 currency: 'NGN',
-                redirect_url: `${process.env.FRONTEND_URL}/success`,
+                redirect_url: `${storefront}/success`,
                 payment_options: 'card,account,ussd,banktransfer',
                 customer: {
                     email: user.email,
@@ -28,7 +31,7 @@ const paymentController = async(request,response)=>{
                 customizations: {
                     title: 'Ronniesfabrics Payment',
                     description: `Payment for ${cartItems.length} item(s)`,
-                    logo: process.env.FRONTEND_URL + '/logo.png'
+                    logo: `${storefront}/logo.png`
                 },
                 meta: {
                     userId: request.userId.toString(),

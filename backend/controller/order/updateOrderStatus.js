@@ -57,16 +57,16 @@ async function updateOrderStatus(req, res) {
             // Don't throw error - we don't want to block the status update
         }
 
-        // Emit real-time update via WebSocket
-        const io = req.app.get('io');
-        if (io) {
-            io.emit('order-status-updated', {
-                orderId: updatedOrder._id,
-                userId: updatedOrder.userId,
-                newStatus: status,
-                message: `Order #${updatedOrder._id} status changed to ${status}`
-            });
-        }
+        // WebSocket (Socket.IO) real-time update — disabled
+        // const io = req.app.get('io');
+        // if (io) {
+        //     io.emit('order-status-updated', {
+        //         orderId: updatedOrder._id,
+        //         userId: updatedOrder.userId,
+        //         newStatus: status,
+        //         message: `Order #${updatedOrder._id} status changed to ${status}`
+        //     });
+        // }
 
         res.json({
             data: updatedOrder,

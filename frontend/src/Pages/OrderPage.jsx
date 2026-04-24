@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import SummaryApi from '../common';
 import moment from 'moment';
 import displayNARCurrency from '../helpers/displayCurrency';
-import { useSocket } from '../context/SocketContext';
-import { toast } from 'react-toastify';
+// import { useSocket } from '../context/SocketContext';
 
 const statusStyles = {
   Delivered: 'bg-emerald-50 text-emerald-800 ring-emerald-600/20',
@@ -15,7 +14,7 @@ const statusStyles = {
 const OrderPage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { socket } = useSocket();
+  // const { socket } = useSocket();
 
   const fetchOrderDetails = async () => {
     setLoading(true);
@@ -43,35 +42,15 @@ const OrderPage = () => {
     fetchOrderDetails();
   }, []);
 
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleOrderStatusChange = (updateData) => {
-      setData((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updateData.orderId ? { ...order, status: updateData.newStatus } : order
-        )
-      );
-
-      toast.info(`Order #${updateData.orderId.slice(-6)} status updated to ${updateData.newStatus}`, {
-        position: 'top-right',
-        autoClose: 5000,
-      });
-    };
-
-    socket.on('order-status-changed', handleOrderStatusChange);
-
-    return () => {
-      socket.off('order-status-changed', handleOrderStatusChange);
-    };
-  }, [socket]);
+  // WebSocket (Socket.IO) — live order status disabled (refresh page to see updates)
+  // useEffect(() => { socket.on('order-status-changed', ...); return () => socket.off(...); }, [socket]);
 
   return (
     <div className="p-6 sm:p-8 lg:p-10">
       <div className="border-b border-slate-100 pb-6">
         <h2 className="text-xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-2xl">Order history</h2>
         <p className="mt-2 max-w-xl text-sm leading-7 text-slate-600">
-          Track recent purchases, totals, and delivery details. Status updates may also appear here in real time.
+          Track recent purchases, totals, and delivery details. Refresh the page to see the latest status.
         </p>
       </div>
 

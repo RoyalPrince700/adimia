@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import SummaryApi from './common';
 import Context from './context';
-import { SocketProvider } from './context/SocketContext';
+// import { SocketProvider } from './context/SocketContext'; // WebSocket / Socket.IO disabled
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails } from './store/userSlice';
 import { getGuestCartLineCount } from './helpers/guestCart';
@@ -141,26 +141,24 @@ function App() {
     <>
       <ScrollToTop />
 
-      <SocketProvider>
-        <Context.Provider value={contextValue}>
-          <ToastContainer
-            position="top-center"
-            autoClose={1000}
-            limit={1}
-            closeOnClick
-            pauseOnHover
-            draggable
-            theme="light"
-            newestOnTop={true}
-          />
+      <Context.Provider value={contextValue}>
+        <ToastContainer
+          position="top-center"
+          autoClose={1000}
+          limit={1}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+          newestOnTop={true}
+        />
 
-          {!shouldHideHeaderFooter && <Header />}
-          <main className={`min-h-[calc(100vh-120px)] pt-0`}>
-            <Outlet />
-          </main>
-          {!shouldHideHeaderFooter && <Footer />}
-        </Context.Provider>
-      </SocketProvider>
+        {!shouldHideHeaderFooter && <Header />}
+        <main className={`min-h-[calc(100vh-120px)] pt-0`}>
+          <Outlet />
+        </main>
+        {!shouldHideHeaderFooter && <Footer />}
+      </Context.Provider>
     </>
   );
 }

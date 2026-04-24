@@ -67,8 +67,8 @@ const { googleAuth, googleAuthCallback } = require('../controller/user/authContr
 const verifyPaymentController = require('../controller/order/verifyPaymentController');
 
 // Authentication routes
-// router.post("/signup", UserSignUpController);
-// router.post("/signin", userSignInController);
+router.post("/signup", UserSignUpController);
+router.post("/signin", userSignInController);
 router.get("/auth/google", googleAuth);
 router.get("/auth/google/callback", googleAuthCallback);
 router.get("/user-details", authToken, userDetailsController);

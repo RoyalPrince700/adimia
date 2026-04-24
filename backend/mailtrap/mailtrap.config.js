@@ -29,8 +29,12 @@ const transporter = nodemailer.createTransport({
     socketTimeout: 30000,
 });
 
-// Use either MAILTRAP_FROM_EMAIL or MAILTRAP_FROM
-const fromEmail = process.env.MAILTRAP_FROM_EMAIL || process.env.MAILTRAP_FROM || "noreply@adimiaworld.com";
+// From address: plain email. Prefer Mailtrap sending domain / verified sender.
+const fromEmail =
+  process.env.MAILTRAP_FROM_EMAIL ||
+  process.env.MAILTRAP_FROM ||
+  process.env.EMAIL_FROM ||
+  "noreply@adimiaworld.com";
 
 // Log mail configuration summary (safe, no secrets)
 try {

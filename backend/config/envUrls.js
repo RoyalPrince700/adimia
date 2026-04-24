@@ -1,7 +1,11 @@
 /**
- * Public URLs for OAuth redirects, CORS, emails (no hardcoded production domains).
- * Set BACKEND_URL, FRONTEND_URL, and optionally CORS_ALLOWED_ORIGINS in deployment.
+ * Public URLs for OAuth redirects, CORS, and emails.
+ * Set FRONTEND_URL in production to your storefront (e.g. https://www.admiaworld.com).
+ * If FRONTEND_URL is unset in production, https://www.admiaworld.com is used so email links and redirects are never empty.
+ * Set BACKEND_URL, and optionally CORS_ALLOWED_ORIGINS, in deployment.
  */
+
+const DEFAULT_PRODUCTION_FRONTEND = 'https://www.admiaworld.com';
 
 function normalizeWithScheme(value) {
   if (!value || typeof value !== 'string') return null;
@@ -43,17 +47,68 @@ function getGoogleOAuthCallbackUrl() {
 }
 
 /**
- * Where users land after Google OAuth and for email links.
+ * Storefront base URL: OAuth redirects, Flutterwave return URL, email buttons/links.
+ * Uses FRONTEND_URL when set (https optional); in production, defaults to the live store if unset.
  */
 function getFrontendBaseUrl() {
-  if (process.env.FRONTEND_URL) {
-    return stripTrailingSlash(process.env.FRONTEND_URL.trim());
+  const raw = process.env.FRONTEND_URL;
+  if (raw && String(raw).trim()) {
+    // Only one origin here — CORS uses CORS_ALLOWED_ORIGINS, not this var.
+    let single = String(raw).trim();
+    if (single.includes(',')) {
+      console.warn(
+        '[env] FRONTEND_URL must be a single URL. Using first value before comma. Put extra origins in CORS_ALLOWED_ORIGINS only.'
+      );
+      single = single.split(',')[0].trim();
+    }
+    const normalized = normalizeWithScheme(single);
+    if (normalized) {
+      return stripTrailingSlash(normalized);
+    }
   }
   if (process.env.NODE_ENV === 'production') {
-    return null;
+    return stripTrailingSlash(DEFAULT_PRODUCTION_FRONTEND);
   }
   const local = process.env.LOCAL_FRONTEND_URL || 'http://localhost:5173';
-  return stripTrailingSlash(local);
+  const localNorm = normalizeWithScheme(local) || local;
+  return stripTrailingSlash(localNorm);
+}
+
+function isLocalhostStorefrontUrl(url) {
+  if (!url || typeof url !== 'string') return true;
+  try {
+    const { hostname } = new URL(url);
+    return (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname === '[::1]' ||
+      hostname === '::1'
+    );
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Base URL for links inside transactional emails (welcome, order status, admin "View" product links).
+ * Set EMAIL_FRONTEND_URL to override (e.g. for staging). Otherwise uses FRONTEND_URL; if that
+ * still resolves to localhost, falls back to the live store so in-app link buttons are not
+ * left pointing at dev servers.
+ */
+function getStorefrontBaseUrlForEmail() {
+  const emailRaw = process.env.EMAIL_FRONTEND_URL;
+  if (emailRaw && String(emailRaw).trim()) {
+    const normalized = normalizeWithScheme(String(emailRaw).trim());
+    if (normalized) {
+      return stripTrailingSlash(normalized);
+    }
+  }
+  const base = getFrontendBaseUrl();
+  if (isLocalhostStorefrontUrl(base)) {
+    return stripTrailingSlash(DEFAULT_PRODUCTION_FRONTEND);
+  }
+  return base || stripTrailingSlash(DEFAULT_PRODUCTION_FRONTEND);
 }
 
 /**
@@ -87,6 +142,8 @@ module.exports = {
   resolveBackendPublicBaseUrl,
   getGoogleOAuthCallbackUrl,
   getFrontendBaseUrl,
+  getStorefrontBaseUrlForEmail,
   getAllowedCorsOrigins,
   stripTrailingSlash,
+  DEFAULT_PRODUCTION_FRONTEND,
 };

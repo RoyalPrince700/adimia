@@ -4,7 +4,7 @@ import moment from "moment";
 import SummaryApi from "../../common";
 import displayNARCurrency from "../../helpers/displayCurrency";
 import ChangeOrderStatus from "../../components/ChangeOrderStatus";
-import { useSocket } from "../../context/SocketContext";
+// import { useSocket } from "../../context/SocketContext";
 
 const OrdersTable = () => {
   const [allOrders, setAllOrders] = useState([]);
@@ -14,7 +14,7 @@ const OrdersTable = () => {
     orderId: "",
     currentStatus: "",
   });
-  const { socket } = useSocket();
+  // const { socket } = useSocket();
 
   // Fetch all orders
   const fetchAllOrders = async () => {
@@ -41,40 +41,8 @@ const OrdersTable = () => {
     fetchAllOrders();
   }, []);
 
-  // Join admin room for real-time updates
-  useEffect(() => {
-    if (!socket) return;
-
-    // Join admin room
-    socket.emit('join-admin-room');
-    console.log('Admin joined admin room');
-
-    const handleAdminOrderStatusChange = (updateData) => {
-      console.log('Admin received order status change:', updateData);
-
-      // Update the local orders state
-      setAllOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === updateData.orderId
-            ? { ...order, status: updateData.newStatus }
-            : order
-        )
-      );
-
-      // Show a toast notification
-      toast.info(`Order #${updateData.orderId.slice(-6)} status updated to ${updateData.newStatus}`, {
-        position: "top-right",
-        autoClose: 5000,
-      });
-    };
-
-    socket.on('admin-order-status-changed', handleAdminOrderStatusChange);
-
-    // Cleanup listener on unmount
-    return () => {
-      socket.off('admin-order-status-changed', handleAdminOrderStatusChange);
-    };
-  }, [socket]);
+  // WebSocket (Socket.IO) — admin real-time updates disabled
+  // useEffect(() => { socket.emit('join-admin-room'); ... }, [socket]);
 
   // Update order status
   const updateOrderStatus = async (orderId, newStatus) => {

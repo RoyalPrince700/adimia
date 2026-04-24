@@ -3,11 +3,11 @@ import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
 import SummaryApi from "../common";
 import ORDER_STATUS from "../common/orderStatus";
-import { useSocket } from "../context/SocketContext";
+// import { useSocket } from "../context/SocketContext";
 
 const ChangeOrderStatus = ({ orderId, currentStatus, onClose, callFunc }) => {
     const [orderStatus, setOrderStatus] = useState(currentStatus);
-    const { socket } = useSocket();
+    // const { socket } = useSocket();
 
     const handleStatusChange = (e) => {
         setOrderStatus(e.target.value);
@@ -29,14 +29,10 @@ const ChangeOrderStatus = ({ orderId, currentStatus, onClose, callFunc }) => {
             if (responseData.success) {
                 toast.success(responseData.message);
 
-                // Emit real-time update event
-                if (socket) {
-                    socket.emit('order-status-updated', {
-                        orderId,
-                        newStatus: orderStatus,
-                        message: `Order #${orderId} status changed to ${orderStatus}`
-                    });
-                }
+                // WebSocket (Socket.IO) — disabled
+                // if (socket) {
+                //     socket.emit('order-status-updated', { ... });
+                // }
 
                 onClose();
                 callFunc(); // Refresh the orders list

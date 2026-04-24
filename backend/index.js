@@ -7,7 +7,8 @@ const passport = require('passport');
 require('./config/passport');
 const router = require('./routes');
 const { createServer } = require('http');
-const initializeSocket = require('./config/socket');
+// WebSocket (Socket.IO) disabled — see ./config/socket.js
+// const initializeSocket = require('./config/socket');
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
@@ -22,8 +23,8 @@ const { getAllowedCorsOrigins } = require('./config/envUrls.js');
 const app = express();
 const server = createServer(app);
 
-// Initialize Socket.IO
-const io = initializeSocket(server);
+// const io = initializeSocket(server);
+const io = null;
 
 // Middleware
 const allowedCorsOrigins = getAllowedCorsOrigins();
@@ -68,8 +69,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
-// Make io available to routes
-app.set('io', io);
+// if (io) app.set('io', io);
 app.use("/api", router);
 
 // Start the server

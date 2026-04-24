@@ -1,3 +1,9 @@
+/**
+ * Socket.IO is disabled. To restore: uncomment the block below and wire
+ * `initializeSocket` in `backend/index.js` again.
+ */
+
+/* DISABLED – Socket.IO server
 const { Server } = require('socket.io');
 const { getAllowedCorsOrigins } = require('./envUrls.js');
 
@@ -62,3 +68,8 @@ const initializeSocket = (server) => {
 };
 
 module.exports = initializeSocket;
+*/
+
+module.exports = function initializeSocketDisabled() {
+    return null;
+};
