@@ -1,14 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import VerticalCard from '../components/VerticalCard';
-import { localProducts } from '../data/localProductCatalog';
+import SummaryApi from '../common';
 
 const inputClass =
   'mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200';
 
 const ContactUs = () => {
-  const featured = localProducts.slice(0, 4);
+  const [featured, setFeatured] = useState([]);
+  const [loadingCatalog, setLoadingCatalog] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingCatalog(true);
+      try {
+        const response = await fetch(SummaryApi.allProduct.url, {
+          method: SummaryApi.allProduct.method,
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const json = await response.json();
+        setFeatured((json?.data || []).slice(0, 4));
+      } catch (e) {
+        console.error(e);
+        setFeatured([]);
+      } finally {
+        setLoadingCatalog(false);
+      }
+    };
+    load();
+  }, []);
 
   return (
     <div className="mt-0 bg-white pb-10 pt-0 sm:mt-6 sm:px-8 lg:mt-2 lg:px-16">
@@ -154,7 +175,7 @@ const ContactUs = () => {
             <p className="mt-2 text-slate-500">Explore the same product cards used across the store.</p>
             <div className="mx-auto mt-3 h-0.5 w-16 bg-slate-800 sm:w-24" />
           </div>
-          <VerticalCard loading={false} data={featured} />
+          <VerticalCard loading={loadingCatalog} data={featured} />
         </div>
       </section>
     </div>

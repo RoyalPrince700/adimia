@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SummaryApi from '../common';
 import displayNARCurrency from '../helpers/displayCurrency';
@@ -14,9 +14,11 @@ const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { fetchUserAddToCart } = useContext(Context);
+  const [signedIn, setSignedIn] = useState(null);
 
-  const cartItems = location.state?.cartItems || [];
-  const totalPrice = location.state?.totalPrice || 0;
+  const [cartItems, setCartItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [loadState, setLoadState] = useState('loading');
 
   const [shippingDetails, setShippingDetails] = useState({
     name: '',
@@ -27,6 +29,67 @@ const Checkout = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPayOnDeliveryLoading, setIsPayOnDeliveryLoading] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: 'include',
+      });
+      const j = await res.json();
+      if (j.success && j.data) {
+        setSignedIn(true);
+        return;
+      }
+      setSignedIn(false);
+      sessionStorage.setItem('postLoginRedirect', '/checkout');
+      navigate('/login', { replace: true });
+    })();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (signedIn !== true) {
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setLoadState('loading');
+      if (location.state?.cartItems?.length) {
+        if (cancelled) {
+          return;
+        }
+        setCartItems(location.state.cartItems);
+        setTotalPrice(Number(location.state.totalPrice) || 0);
+        setLoadState('ready');
+        return;
+      }
+      const response = await fetch(SummaryApi.addToCartProductView.url, {
+        method: SummaryApi.addToCartProductView.method,
+        credentials: 'include',
+        headers: { 'content-type': 'application/json' },
+      });
+      const j = await response.json();
+      if (cancelled) {
+        return;
+      }
+      if (j.success && Array.isArray(j.data) && j.data.length) {
+        setCartItems(j.data);
+        setTotalPrice(
+          j.data.reduce(
+            (a, c) => a + c.quantity * (Number(c?.productId?.sellingPrice) || 0),
+            0
+          )
+        );
+      } else {
+        setCartItems([]);
+        setTotalPrice(0);
+      }
+      setLoadState('ready');
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [signedIn, location.key, location.state]);
 
   const handleChange = (e) => {
     setShippingDetails({
@@ -59,7 +122,7 @@ const Checkout = () => {
         address: shippingDetails.address,
         note: shippingDetails.note || '',
         cartItems,
-        totalPrice: totalPrice,
+        totalPrice: Number(totalPrice),
         paymentMethod: 'Pay on Delivery',
       };
 
@@ -113,6 +176,22 @@ const Checkout = () => {
       setIsLoading(false);
     }
   };
+
+  if (signedIn === null) {
+    return null;
+  }
+
+  if (signedIn === false) {
+    return null;
+  }
+
+  if (loadState !== 'ready') {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center bg-white px-4">
+        <p className="text-sm text-slate-500">Loading checkout…</p>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (

@@ -19,7 +19,7 @@ const VERIFICATION_EMAIL_TEMPLATE = `
     <p>Enter this code on the verification page to complete your registration.</p>
     <p>This code will expire in 15 minutes for security reasons.</p>
     <p>If you didn't create an account with us, please ignore this email.</p>
-    <p>Best regards,<br>The Ronniesfabrics Team</p>
+    <p>Best regards,<br>The Adimia World Team</p>
   </div>
   <div style="text-align: center; margin-top: 20px; color: #6B7280; font-size: 0.8em;">
     <p>This is an automated message, please do not reply to this email.</p>
@@ -50,7 +50,7 @@ const PASSWORD_RESET_SUCCESS_TEMPLATE = `
     </div>
     <p>If you did not initiate this password reset, please contact our support team immediately.</p>
     <p>Thank you for helping us keep your account secure.</p>
-    <p>Best regards,<br>The Ronniesfabrics Team</p>
+    <p>Best regards,<br>The Adimia World Team</p>
   </div>
   <div style="text-align: center; margin-top: 20px; color: #6B7280; font-size: 0.8em;">
     <p>This is an automated message, please do not reply to this email.</p>
@@ -79,7 +79,7 @@ const PASSWORD_RESET_REQUEST_TEMPLATE = `
       <a href="{resetURL}" style="background-color: #4B5563; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
     </div>
     <p>This link will expire in 1 hour for security reasons.</p>
-    <p>Best regards,<br>The Ronniesfabrics Team</p>
+    <p>Best regards,<br>The Adimia World Team</p>
   </div>
   <div style="text-align: center; margin-top: 20px; color: #6B7280; font-size: 0.8em;">
     <p>This is an automated message, please do not reply to this email.</p>
@@ -144,11 +144,11 @@ const ORDER_CONFIRMATION_EMAIL_TEMPLATE = `
     <p>We'll process your order shortly and send you updates on the delivery status.</p>
     <p>If you have any questions, feel free to contact our support team.</p>
 
-    <p>Best regards,<br>The Ronniesfabrics Team</p>
+    <p>Best regards,<br>The Adimia World Team</p>
   </div>
 
   <div class="footer">
-    <p>This is an automated message from Ronniesfabrics. Please do not reply to this email.</p>
+    <p>This is an automated message from Adimia World. Please do not reply to this email.</p>
   </div>
 </body>
 </html>
@@ -197,11 +197,11 @@ const PAYMENT_SUCCESS_EMAIL_TEMPLATE = `
     <p>Thank you for your payment! Your order is now being processed.</p>
     <p>You will receive updates on your order status via email and in-app notifications.</p>
 
-    <p>Best regards,<br>The Ronniesfabrics Team</p>
+    <p>Best regards,<br>The Adimia World Team</p>
   </div>
 
   <div class="footer">
-    <p>This is an automated message from Ronniesfabrics. Please do not reply to this email.</p>
+    <p>This is an automated message from Adimia World. Please do not reply to this email.</p>
   </div>
 </body>
 </html>
@@ -252,7 +252,7 @@ const ORDER_NOTIFICATION_TEMPLATE = `
     <strong>Total:</strong> {total}
   </p>
 
-  <p style="color:#6b7280; font-size: 12px;">This message was sent automatically by Ronniesfabrics backend.</p>
+  <p style="color:#6b7280; font-size: 12px;">This message was sent automatically by Adimia World backend.</p>
 </body>
 </html>
 `;
@@ -263,7 +263,7 @@ const ORDER_STATUS_UPDATE_EMAIL_TEMPLATE = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Status Update - Ronniesfabrics</title>
+  <title>Order Status Update - Adimia World</title>
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
     .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -306,12 +306,12 @@ const ORDER_STATUS_UPDATE_EMAIL_TEMPLATE = `
 
     <p>If you have any questions about your order, please don't hesitate to contact our support team.</p>
 
-    <p>Best regards,<br>The Ronniesfabrics Team</p>
+    <p>Best regards,<br>The Adimia World Team</p>
   </div>
 
   <div class="footer">
-    <p>This is an automated message from Ronniesfabrics. Please do not reply to this email.</p>
-    <p>Need help? Contact us at <a href="mailto:support@ronniesfabrics.com">support@ronniesfabrics.com</a></p>
+    <p>This is an automated message from Adimia World. Please do not reply to this email.</p>
+    <p>Need help? Contact us at <a href="mailto:support@adimiaworld.com">support@adimiaworld.com</a></p>
   </div>
 </body>
 </html>

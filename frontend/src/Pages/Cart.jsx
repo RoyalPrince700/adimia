@@ -1,25 +1,58 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import SummaryApi from '../common';
 import Context from '../context';
 import displayNARCurrency from '../helpers/displayCurrency';
 import { MdDelete } from 'react-icons/md';
-import {
-    getLocalCartItems,
-    removeLocalCartItem,
-    updateLocalCartItemQuantity,
-} from '../helpers/localCart';
+import { getGuestCartItems, removeGuestCartItem, updateGuestCartQuantity } from '../helpers/guestCart';
 
 const Cart = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const context = useContext(Context); // data of cart is coming from here
+    const context = useContext(Context);
     const loadingCart = new Array(context.cartProductCount).fill(null);
     const navigate = useNavigate();
+    const user = useSelector((s) => s?.user?.user);
+
+    const buildGuestRows = async () => {
+        const rows = getGuestCartItems();
+        if (!rows.length) {
+            setData([]);
+            return;
+        }
+        const built = await Promise.all(
+            rows.map(async (row) => {
+                const res = await fetch(SummaryApi.productDetails.url, {
+                    method: SummaryApi.productDetails.method,
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ productId: row.productId }),
+                });
+                const json = await res.json();
+                const product = json?.data;
+                if (!product) {
+                    return null;
+                }
+                return {
+                    _id: `guest-${row.productId}`,
+                    productId: product,
+                    quantity: row.quantity,
+                };
+            })
+        );
+        setData(built.filter(Boolean));
+    };
 
     const fetchData = async () => {
-        const localCartItems = getLocalCartItems();
-
+        if (!user) {
+            try {
+                await buildGuestRows();
+            } catch (error) {
+                console.error('Error loading guest cart:', error);
+                setData([]);
+            }
+            return;
+        }
         try {
             const response = await fetch(SummaryApi.addToCartProductView.url, {
                 method: SummaryApi.addToCartProductView.method,
@@ -32,14 +65,14 @@ const Cart = () => {
             const responseData = await response.json();
 
             if (responseData.success) {
-                setData([...localCartItems, ...responseData.data]);
+                setData(responseData.data);
                 return;
             }
         } catch (error) {
             console.error('Error fetching cart products:', error);
         }
 
-        setData(localCartItems);
+        setData([]);
     };
 
     const handleLoading = async () => {
@@ -50,16 +83,23 @@ const Cart = () => {
 
     useEffect(() => {
         handleLoading();
-    }, []);
+    }, [user?._id]);
 
-    const increaseQty = async (id, qty, isLocalCatalogProduct = false) => {
-        if (isLocalCatalogProduct) {
-            updateLocalCartItemQuantity(id, qty + 1);
-            fetchData();
-            context.fetchUserAddToCart();
+    const getGuestProductIdFromRow = (row) => String(row?.productId?._id || row?.productId || '').replace(/^guest-/, '');
+
+    const increaseQty = async (id, qty) => {
+        if (!user) {
+            const productId = String(id).replace(/^guest-/, '');
+            const row = data.find(
+                (p) => getGuestProductIdFromRow(p) === productId || p._id === id
+            );
+            if (row) {
+                updateGuestCartQuantity(productId, (row.quantity || 1) + 1);
+                await buildGuestRows();
+                context.fetchUserAddToCart();
+            }
             return;
         }
-
         const response = await fetch(SummaryApi.updateCartProduct.url, {
             method: SummaryApi.updateCartProduct.method,
             credentials: 'include',
@@ -67,8 +107,8 @@ const Cart = () => {
                 'content-type': 'application/json',
             },
             body: JSON.stringify({
-                _id: id, // Send the product's _id
-                quantity: qty + 1, // Increase the quantity
+                _id: id,
+                quantity: qty + 1,
             }),
         });
 
@@ -79,43 +119,54 @@ const Cart = () => {
         }
     };
 
-    const decreaseQty = async (id, qty, isLocalCatalogProduct = false) => {
-        if (qty >= 2) {
-            if (isLocalCatalogProduct) {
-                updateLocalCartItemQuantity(id, qty - 1);
-                fetchData();
-                context.fetchUserAddToCart();
-                return;
-            }
-
-            const response = await fetch(SummaryApi.updateCartProduct.url, {
-                method: SummaryApi.updateCartProduct.method,
-                credentials: 'include',
-                headers: {
-                    'content-type': 'application/json',
-                },
-                body: JSON.stringify({
-                    _id: id, // Send the product's _id
-                    quantity: qty - 1, // Decrease the quantity
-                }),
-            });
-
-            const responseData = await response.json();
-            if (responseData.success) {
-                fetchData();
+    const decreaseQty = async (id, qty) => {
+        if (qty < 2) {
+            return;
+        }
+        if (!user) {
+            const productId = String(id).replace(/^guest-/, '');
+            const row = data.find(
+                (p) => getGuestProductIdFromRow(p) === productId || p._id === id
+            );
+            if (row) {
+                updateGuestCartQuantity(productId, (row.quantity || 1) - 1);
+                await buildGuestRows();
                 context.fetchUserAddToCart();
             }
+            return;
+        }
+        const response = await fetch(SummaryApi.updateCartProduct.url, {
+            method: SummaryApi.updateCartProduct.method,
+            credentials: 'include',
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+                _id: id,
+                quantity: qty - 1,
+            }),
+        });
+
+        const responseData = await response.json();
+        if (responseData.success) {
+            fetchData();
+            context.fetchUserAddToCart();
         }
     };
 
-    const deleteCartProduct = async (id, isLocalCatalogProduct = false) => {
-        if (isLocalCatalogProduct) {
-            removeLocalCartItem(id);
-            fetchData();
+    const deleteCartProduct = async (id) => {
+        if (!user) {
+            const row = data.find((p) => p._id === id);
+            const productId = row
+                ? getGuestProductIdFromRow(row)
+                : String(id).replace(/^guest-/, '');
+            if (productId) {
+                removeGuestCartItem(productId);
+            }
+            await buildGuestRows();
             context.fetchUserAddToCart();
             return;
         }
-
         try {
             const response = await fetch(SummaryApi.deleteCartProduct.url, {
                 method: SummaryApi.deleteCartProduct.method,
@@ -124,7 +175,7 @@ const Cart = () => {
                     'content-type': 'application/json',
                 },
                 body: JSON.stringify({
-                    _id: id, // Send the product's _id
+                    _id: id,
                 }),
             });
 
@@ -146,26 +197,30 @@ const Cart = () => {
         (prev, curr) => prev + curr.quantity * (Number(curr?.productId?.sellingPrice) || 0),
         0
     );
-    
+
     const handleCheckout = () => {
-        if (data.length > 0) {
-            navigate('/checkout', {
-                state: {
-                    cartItems: data,
-                    totalPrice: totalPrice,
-                },
-            });
-        } else {
+        if (data.length === 0) {
             alert('No items in the cart. Please add items to proceed.');
+            return;
         }
+        if (!user) {
+            sessionStorage.setItem('postLoginRedirect', '/checkout');
+            navigate('/login');
+            return;
+        }
+        navigate('/checkout', {
+            state: {
+                cartItems: data,
+                totalPrice,
+            },
+        });
     };
-    
 
     return (
         <div className="bg-white px-0 pb-10 pt-0 sm:px-8 sm:pt-[24px] lg:px-16 lg:pt-[24px]">
             <section className="mx-auto max-w-7xl">
                 <div className="overflow-hidden rounded-none border border-b border-x-0 border-t-0 border-slate-200/80 bg-[linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(248,250,252,0.95)_45%,_rgba(241,245,249,0.98))] shadow-none sm:rounded-[36px] sm:border sm:shadow-[0_30px_120px_rgba(15,23,42,0.10)]">
-                    <div className="grid min-w-0 gap-8 px-6 py-8 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-14 lg:py-12">
+                    <div className="grid min-w-0 gap-8 px-6 py-8 sm:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)] lg:px-14 lg:py-12">
                         <div className="min-w-0">
                             <div className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
                                 <span className="h-2 w-2 rounded-full bg-slate-900"></span>
@@ -181,8 +236,8 @@ const Cart = () => {
                             </p>
                         </div>
 
-                        <div className="grid min-w-0 gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
+                        <div className="grid min-w-0 gap-4 sm:grid-cols-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.65fr)]">
+                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5 lg:hidden">
                                 <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{data.length}</p>
                                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Products</p>
                             </div>
@@ -190,8 +245,8 @@ const Cart = () => {
                                 <p className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{totalQty}</p>
                                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Items total</p>
                             </div>
-                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5">
-                                <p className="break-words text-2xl font-semibold tabular-nums tracking-[-0.04em] text-slate-950">
+                            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white/85 px-5 py-5 lg:pl-6 lg:pr-6">
+                                <p className="text-2xl font-semibold tabular-nums tracking-[-0.04em] text-slate-950 lg:whitespace-nowrap">
                                     {displayNARCurrency(totalPrice)}
                                 </p>
                                 <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Order value</p>
@@ -264,7 +319,7 @@ const Cart = () => {
                                               <div className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2">
                                                   <button
                                                       className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg font-semibold text-slate-700 transition hover:bg-slate-950 hover:text-white"
-                                                      onClick={() => decreaseQty(product?._id, product?.quantity, product?.isLocalCatalogProduct)}
+                                                      onClick={() => decreaseQty(product?._id, product?.quantity)}
                                                   >
                                                       -
                                                   </button>
@@ -273,24 +328,18 @@ const Cart = () => {
                                                   </span>
                                                   <button
                                                       className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg font-semibold text-slate-700 transition hover:bg-slate-950 hover:text-white"
-                                                      onClick={() => increaseQty(product?._id, product?.quantity, product?.isLocalCatalogProduct)}
+                                                      onClick={() => increaseQty(product?._id, product?.quantity)}
                                                   >
                                                       +
                                                   </button>
                                               </div>
-
-                                              {product?.isLocalCatalogProduct && (
-                                                  <span className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-                                                      Local catalog item
-                                                  </span>
-                                              )}
                                           </div>
                                       </div>
                                   </div>
 
                                   <button
                                       className="absolute right-4 top-4 rounded-full border border-slate-200 bg-white p-2 text-slate-500 transition-all duration-300 hover:border-slate-300 hover:bg-slate-950 hover:text-white"
-                                      onClick={() => deleteCartProduct(product?._id, product?.isLocalCatalogProduct)}
+                                      onClick={() => deleteCartProduct(product?._id)}
                                   >
                                       <MdDelete size={20} />
                                   </button>

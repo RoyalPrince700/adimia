@@ -4,6 +4,43 @@ import { FaStar } from 'react-icons/fa6';
 import displayNARCurrency from '../helpers/displayCurrency';
 import scrollTop from '../helpers/scrollTop';
 
+/** Skeleton matching this card’s layout (image + badge, category, title, rating, prices, CTA bar). */
+export const ProductGridCardSkeleton = () => (
+  <div
+    className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+    aria-hidden
+  >
+    <div className="relative">
+      <div className="aspect-square overflow-hidden bg-slate-50 p-4">
+        <div className="h-full w-full rounded-lg bg-slate-200/90 animate-pulse" />
+      </div>
+      <span className="absolute left-3 top-3 h-5 w-14 rounded-full bg-amber-100/90 animate-pulse" />
+    </div>
+
+    <div className="flex flex-1 flex-col p-4">
+      <div className="h-2.5 w-24 rounded bg-slate-200/90 animate-pulse" />
+      <div className="mt-2 min-h-[48px] space-y-2">
+        <div className="h-3.5 w-full rounded bg-slate-200/90 animate-pulse" />
+        <div className="h-3.5 w-4/5 rounded bg-slate-200/90 animate-pulse" />
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <div className="h-3.5 w-3.5 rounded bg-slate-200/90 animate-pulse" />
+        <div className="h-3.5 w-8 rounded bg-slate-200/90 animate-pulse" />
+        <div className="h-3 w-7 rounded bg-slate-200/60 animate-pulse" />
+      </div>
+      <div className="mt-3 flex items-end gap-2">
+        <div className="h-6 w-20 rounded bg-slate-200/90 animate-pulse" />
+        <div className="h-4 w-14 rounded bg-slate-200/60 animate-pulse" />
+      </div>
+      <div className="mt-2 h-3 w-32 max-w-full rounded bg-slate-200/60 animate-pulse" />
+      <div className="mt-4 flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+        <div className="h-2.5 w-20 rounded bg-slate-200/80 animate-pulse" />
+        <div className="h-3.5 w-16 rounded bg-slate-200/60 animate-pulse" />
+      </div>
+    </div>
+  </div>
+);
+
 const ProductGridCard = ({ product }) => {
   return (
     <Link

@@ -8,14 +8,15 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import SummaryApi from './common';
 import Context from './context';
 import { SocketProvider } from './context/SocketContext';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails } from './store/userSlice';
+import { getGuestCartLineCount } from './helpers/guestCart';
+import { mergeGuestCartToServer } from './helpers/mergeGuestCartToServer';
 import ScrollToTop from './components/ScrollTop';
 import { matchPath } from 'react-router-dom';
-import { getLocalCartQuantitySum } from './helpers/localCart';
-
 function App() {
   const dispatch = useDispatch();
+  const user = useSelector((s) => s.user.user);
   const location = useLocation();
   const [cartProductCount, setCartProductCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -43,8 +44,12 @@ function App() {
     }
   }, [dispatch]);
 
-  // Fetch cart product count
+  // Fetch cart product count (server for signed-in users, local guest count otherwise)
   const fetchUserAddToCart = useCallback(async () => {
+    if (!user) {
+      setCartProductCount(getGuestCartLineCount());
+      return;
+    }
     try {
       const dataResponse = await fetch(SummaryApi.addToCartProductCount.url, {
         method: SummaryApi.addToCartProductCount.method,
@@ -53,13 +58,11 @@ function App() {
 
       const dataApi = await dataResponse.json();
       const serverCount = dataApi?.data?.count;
-      const n =
-        (typeof serverCount === 'number' ? serverCount : 0) + getLocalCartQuantitySum();
-      setCartProductCount(n);
+      setCartProductCount(typeof serverCount === 'number' ? serverCount : 0);
     } catch (error) {
       console.error('Failed to fetch cart product count:', error.message);
     }
-  }, []);
+  }, [user]);
 
   // Fetch notification count
   const fetchUserNotification = useCallback(async () => {
@@ -80,12 +83,30 @@ function App() {
     }
   }, []);
 
+  // Guest: local line count. Signed-in: merge guest bag once into the server cart, then server count.
+  useEffect(() => {
+    if (!user?._id) {
+      fetchUserAddToCart();
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      await mergeGuestCartToServer();
+      if (cancelled) {
+        return;
+      }
+      await fetchUserAddToCart();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?._id, fetchUserAddToCart]);
+
   // Fetch necessary data on component render
   useEffect(() => {
     fetchUserDetails();
-    fetchUserAddToCart();
     fetchUserNotification();
-  }, [fetchUserDetails, fetchUserAddToCart, fetchUserNotification]);
+  }, [fetchUserDetails, fetchUserNotification]);
 
   // Log notification count updates
   useEffect(() => {

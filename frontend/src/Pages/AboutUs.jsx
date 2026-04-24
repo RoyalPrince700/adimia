@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AboutUsHero from '../components/AboutUsHero';
 import VerticalCard from '../components/VerticalCard';
-import { localProducts } from '../data/localProductCatalog';
+import SummaryApi from '../common';
 
 const aboutCards = [
   {
@@ -28,7 +28,28 @@ const aboutCards = [
 ];
 
 const AboutUs = () => {
-  const featured = localProducts.slice(0, 4);
+  const [featured, setFeatured] = useState([]);
+  const [loadingCatalog, setLoadingCatalog] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingCatalog(true);
+      try {
+        const response = await fetch(SummaryApi.allProduct.url, {
+          method: SummaryApi.allProduct.method,
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const json = await response.json();
+        setFeatured((json?.data || []).slice(0, 4));
+      } catch (e) {
+        console.error(e);
+        setFeatured([]);
+      } finally {
+        setLoadingCatalog(false);
+      }
+    };
+    load();
+  }, []);
 
   return (
     <div className="mt-0 bg-white pb-10 pt-0 sm:mt-6 sm:px-8 lg:mt-2 lg:px-16">
@@ -115,7 +136,7 @@ const AboutUs = () => {
             </p>
             <div className="mx-auto mt-3 h-0.5 w-16 bg-slate-800 sm:w-24" />
           </div>
-          <VerticalCard loading={false} data={featured} />
+          <VerticalCard loading={loadingCatalog} data={featured} />
         </div>
       </section>
     </div>

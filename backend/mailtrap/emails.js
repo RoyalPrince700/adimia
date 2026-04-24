@@ -74,7 +74,7 @@ const sendWelcomeEmail = async (email, name = 'there') => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Ronniesfabrics!</title>
+  <title>Welcome to Adimia World!</title>
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; }
     .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -88,19 +88,19 @@ const sendWelcomeEmail = async (email, name = 'there') => {
   <div class="container">
     <div class="header">
       <div class="welcome-icon">🎉</div>
-      <h1>Welcome to Ronniesfabrics!</h1>
-      <p>Your journey to finding the perfect fabrics starts here</p>
+      <h1>Welcome to Adimia World!</h1>
+      <p>Your journey to great products starts here</p>
     </div>
 
     <h2>${personalizedGreeting}</h2>
 
-    <p>Thank you for joining the Ronniesfabrics community! We're thrilled to have you with us.</p>
+    <p>Thank you for joining the Adimia World community! We're thrilled to have you with us.</p>
 
     <p>Here's what you can do to get started:</p>
 
     <ul>
-      <li><strong>Browse our catalog</strong> - Discover premium fabrics for all your tailoring and fashion needs</li>
-      <li><strong>Shop by category</strong> - Find high-quality materials, colors, and fabric types</li>
+      <li><strong>Browse our catalog</strong> - Discover products curated for you</li>
+      <li><strong>Shop by category</strong> - Find what you need quickly</li>
       <li><strong>Track your orders</strong> - Real-time updates on your purchases and shipping status</li>
       <li><strong>Manage your account</strong> - Update your profile and view your order history</li>
     </ul>
@@ -111,11 +111,11 @@ const sendWelcomeEmail = async (email, name = 'there') => {
 
     <p>If you have any questions, feel free to reach out to our support team. We're here to help!</p>
 
-    <p>Welcome aboard,<br>The Ronniesfabrics Team</p>
+    <p>Welcome aboard,<br>The Adimia World Team</p>
   </div>
 
   <div class="footer">
-    <p>This is an automated welcome message from Ronniesfabrics. Please do not reply to this email.</p>
+    <p>This is an automated welcome message from Adimia World. Please do not reply to this email.</p>
   </div>
 </body>
 </html>`;
@@ -123,7 +123,7 @@ const sendWelcomeEmail = async (email, name = 'there') => {
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: email,
-            subject: "🎉 Welcome to Ronniesfabrics - Your Fabric Journey Begins!",
+            subject: "🎉 Welcome to Adimia World - start shopping!",
             html,
         };
 
@@ -248,7 +248,7 @@ const sendUserOrderConfirmationEmail = async (userEmail, payload) => {
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: userEmail,
-            subject: "Order Confirmation - Ronniesfabrics",
+            subject: "Order Confirmation - Adimia World",
             html,
         };
 
@@ -282,7 +282,7 @@ const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: userEmail,
-            subject: "Payment Successful - Ronniesfabrics",
+            subject: "Payment Successful - Adimia World",
             html,
         };
 
@@ -305,9 +305,9 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
         adminRecipients.push(process.env.ADMIN_NOTIFICATION_EMAIL);
     }
 
-    // Fallback to the user's requested admin email if none configured
     if (adminRecipients.length === 0) {
-        adminRecipients.push('ronniesfabrics05@gmail.com');
+        console.warn('[MAIL] No admin recipients for payment notification. Set ADMINEMAIL1, ADMINEMAIL2, or ADMIN_NOTIFICATION_EMAIL.');
+        return;
     }
 
     const orderDetails = paymentData.orderId ? `
@@ -328,7 +328,7 @@ const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: adminRecipients.join(', '),
-            subject: `New Payment Received - ₦${paymentData.amount} | Ronniesfabrics`,
+            subject: `New Payment Received - ₦${paymentData.amount} | Adimia World`,
             html,
         };
 
@@ -378,7 +378,7 @@ const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
         const mailOptions = {
             from: `"${sender.name}" <${sender.email}>`,
             to: userEmail,
-            subject: `Order Status Update - ${orderData.status} | Ronniesfabrics`,
+            subject: `Order Status Update - ${orderData.status} | Adimia World`,
             html,
         };
 

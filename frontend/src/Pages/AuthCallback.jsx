@@ -1,10 +1,10 @@
 import React, { useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Context from '../context';
-import SummaryApi from '../common';
+import { mergeGuestCartToServer } from '../helpers/mergeGuestCartToServer';
 
 function AuthCallback() {
-  const { fetchUserDetails } = useContext(Context);
+  const { fetchUserDetails, fetchUserAddToCart } = useContext(Context);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -15,13 +15,16 @@ function AuthCallback() {
     const handleAuth = async () => {
       if (token) {
         try {
-          // The token is already set as a cookie by the backend redirect
-          // But we can also store it in localStorage if the app uses it for Bearer tokens
-          // Looking at App.jsx, it uses credentials: 'include' which means it relies on cookies.
-          
-          // Fetch user profile to get user data and update Redux store
           await fetchUserDetails();
-          navigate('/');
+          await mergeGuestCartToServer();
+          await fetchUserAddToCart();
+          const postLogin = sessionStorage.getItem('postLoginRedirect');
+          if (postLogin && postLogin.startsWith('/')) {
+            sessionStorage.removeItem('postLoginRedirect');
+            navigate(postLogin, { replace: true });
+          } else {
+            navigate('/');
+          }
         } catch (error) {
           console.error('Auth callback error:', error);
           navigate('/login');
@@ -32,7 +35,7 @@ function AuthCallback() {
     };
 
     handleAuth();
-  }, [location, fetchUserDetails, navigate]);
+  }, [location, fetchUserDetails, fetchUserAddToCart, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen">

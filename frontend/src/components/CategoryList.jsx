@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BiCategoryAlt } from 'react-icons/bi';
-import { getLocalCategorySummaries } from '../data/localProducts';
+import SummaryApi from '../common';
 
 const CategoryDropdown = () => {
   const [categoryProduct, setCategoryProduct] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const categoryLoading = new Array(13).fill(null); // Display a placeholder before categories load
+  const categoryLoading = new Array(13).fill(null);
 
   const fetchCategoryProduct = async () => {
     setLoading(true);
     try {
-      // Backend version kept here for easy reactivation later.
-      // const response = await fetch(SummaryApi.categoryProduct.url);
-      // const dataResponse = await response.json();
-      // setCategoryProduct(dataResponse.data || []);
-
-      setCategoryProduct(getLocalCategorySummaries());
+      const response = await fetch(SummaryApi.categoryProduct.url, {
+        method: SummaryApi.categoryProduct.method,
+        headers: { 'content-type': 'application/json' },
+      });
+      const dataResponse = await response.json();
+      setCategoryProduct(dataResponse.data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
     } finally {

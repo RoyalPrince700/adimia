@@ -30,7 +30,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Use either MAILTRAP_FROM_EMAIL or MAILTRAP_FROM
-const fromEmail = process.env.MAILTRAP_FROM_EMAIL || process.env.MAILTRAP_FROM || "noreply@ronniesfabrics.com";
+const fromEmail = process.env.MAILTRAP_FROM_EMAIL || process.env.MAILTRAP_FROM || "noreply@adimiaworld.com";
 
 // Log mail configuration summary (safe, no secrets)
 try {
@@ -75,7 +75,7 @@ if (user && pass) {
 
 const sender = {
     email: fromEmail,
-    name: "Ronniesfabrics",
+    name: "Adimia World",
 };
 
 module.exports = { transporter, sender };

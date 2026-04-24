@@ -1,16 +1,44 @@
-import SummaryApi from "../common";
+import SummaryApi from '../common';
 import { toast } from 'react-toastify';
-import { addLocalCartItem, resolveClientOnlyProduct } from './localCart';
+import { store } from '../store/store';
+import { addGuestCartItem } from './guestCart';
+import { validateProductForCart } from './validateProductForCart';
+
+const getProductId = (id) => {
+  if (id !== null && typeof id === 'object' && 'id' in id) {
+    return id.id;
+  }
+  return id;
+};
 
 const addToCart = async (e, id) => {
   e?.stopPropagation();
   e?.preventDefault();
 
-  if (typeof id === 'string' && resolveClientOnlyProduct(id)) {
+  const productId = getProductId(id);
+  if (!productId) {
+    toast.error('Invalid product.');
+    return;
+  }
+
+  const isLoggedIn = Boolean(store.getState().user.user);
+
+  if (!isLoggedIn) {
     try {
-      addLocalCartItem(id, 1);
-      toast.success('Product added to cart');
-      return { success: true };
+      const { ok, message } = await validateProductForCart(productId);
+      if (!ok) {
+        toast.error(message || 'This product cannot be added to the cart.');
+        return;
+      }
+      const guest = addGuestCartItem(productId);
+      if (guest.error === 'duplicate') {
+        toast.error('Already added to cart.');
+        return;
+      }
+      if (guest.success) {
+        toast.success('Product added to cart.');
+        return { success: true, message: 'Product added to cart.' };
+      }
     } catch (err) {
       toast.error('An error occurred. Please try again later.');
       console.error('Error:', err);
@@ -23,115 +51,30 @@ const addToCart = async (e, id) => {
       method: SummaryApi.addToCartProduct.method,
       credentials: 'include',
       headers: {
-        "content-type": 'application/json'
+        'content-type': 'application/json',
       },
       body: JSON.stringify({
-        productId: id
-      })
+        productId,
+      }),
     });
 
     const responseData = await response.json();
 
-    // If response is not okay, show error and stop further execution
     if (!response.ok) {
       toast.error(responseData.message || 'Something went wrong!');
       return;
     }
 
-    // Handle success and error responses based on response data
     if (responseData.success) {
       toast.success(responseData.message);
     } else if (responseData.error) {
       toast.error(responseData.message);
     }
-    return  responseData
-
-
+    return responseData;
   } catch (err) {
-    // Catch any fetch-related errors
     toast.error('An error occurred. Please try again later.');
     console.error('Error:', err);
   }
-
-    
 };
 
 export default addToCart;
-
-
-/*import SummaryApi from "../common";
-import { toast } from 'react-toastify';
-
-const addToCart = async (e, id) => {
-  e?.stopPropagation();
-  e?.preventDefault();
-
-  try {
-    const response = await fetch(SummaryApi.addToCartProduct.url, {
-      method: SummaryApi.addToCartProduct.method,
-      credentials: 'include',
-      headers: {
-        "content-type": 'application/json'
-      },
-      body: JSON.stringify({
-        productId: id
-      })
-    });
-
-    const responseData = await response.json();
-    // Check if the response status is OK (200 range)
-    if (!response.ok) {
-      const errorData = await response.json();
-      toast.error(errorData.message || 'Something went wrong!');
-      return;
-    }
-
-   
-
-    // Handle success and error responses
-    if (responseData.success) {
-      toast.success(responseData.message);
-    } else if (responseData.error) {
-      toast.error(responseData.message);
-    }
-  } catch (err) {
-    // Handle any fetch errors
-    toast.error('An error occurred. Please try again later.');
-    console.error('Error:', err);
-  }
-};
-
-export default addToCart;*/
-
-
-/*import SummaryApi from "../common"
-import {toast} from 'react-toastify'
-
-const addToCart = async(e,id) =>{
-    e?.stopPropagation()
-    e?.preventDefault()
-
-    const response = await fetch(SummaryApi.addToCartProduct.url,{
-        method : SummaryApi.addToCartProduct.method,
-        credentials : 'include',
-        headers : {
-            "content-type" : 'application/json'
-        },
-        body : JSON.stringify({
-            productId : id
-        })
-        
-    })
-
-    const responseData = await response.json()
-    if(responseData.success){
-        toast.success(responseData.message)
-    }
-
-    if(responseData.error){
-        toast.error(responseData.message)
-    }
-
-}
-
-export default addToCart*/

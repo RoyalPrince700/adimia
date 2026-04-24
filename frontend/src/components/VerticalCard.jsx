@@ -16,14 +16,31 @@ const VerticalCard = ({ loading, data = [] }) => {
         ? loadingList.map((_, index) => (
             <div
               key={index}
-              className="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]"
+              className="flex h-full min-w-0 flex-col overflow-hidden rounded-[24px] border border-slate-200/80 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:rounded-[28px]"
+              aria-hidden
             >
-              <div className="h-64 bg-slate-100 animate-pulse"></div>
-              <div className="space-y-3 p-5">
-                <div className="h-4 w-24 rounded-full bg-slate-200 animate-pulse"></div>
-                <div className="h-5 rounded-full bg-slate-200 animate-pulse"></div>
-                <div className="h-5 w-4/5 rounded-full bg-slate-200 animate-pulse"></div>
-                <div className="h-4 w-2/3 rounded-full bg-slate-200 animate-pulse"></div>
+              <div className="relative overflow-hidden bg-white px-3 pt-3 sm:px-6 sm:pt-6">
+                <div className="absolute left-3 top-3 z-10 h-5 w-[4.5rem] rounded-full bg-slate-200/90 animate-pulse sm:left-5 sm:top-5" />
+                <div className="absolute right-3 top-3 z-10 h-5 w-10 rounded-full bg-slate-200/90 animate-pulse sm:right-5 sm:top-5" />
+                <div className="relative flex h-40 items-center justify-center sm:h-64">
+                  <div className="absolute inset-x-6 bottom-3 h-8 rounded-full bg-slate-200/40 blur-2xl sm:inset-x-10 sm:bottom-5 sm:h-10" />
+                  <div className="relative z-[1] h-32 w-32 rounded-2xl bg-slate-100/90 animate-pulse sm:h-44 sm:w-44" />
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col gap-3 p-3 sm:gap-4 sm:p-5">
+                <div className="space-y-2">
+                  <div className="h-4 w-full rounded-md bg-slate-200/90 animate-pulse sm:h-5" />
+                  <div className="h-4 w-[88%] rounded-md bg-slate-200/90 animate-pulse sm:h-5" />
+                  <div className="h-3 w-full rounded-md bg-slate-200/50 animate-pulse sm:h-4" />
+                  <div className="h-3 w-3/4 rounded-md bg-slate-200/50 animate-pulse sm:h-4" />
+                </div>
+                <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 sm:pt-4">
+                  <div className="flex flex-col gap-1.5">
+                    <div className="h-3 w-14 rounded bg-slate-200/60 animate-pulse" />
+                    <div className="h-6 w-24 rounded-md bg-slate-200/90 animate-pulse sm:h-7 sm:w-28" />
+                  </div>
+                  <div className="h-10 w-full max-w-full rounded-full border border-slate-200/80 bg-slate-50/90 animate-pulse sm:h-11 sm:max-w-[7.5rem]" />
+                </div>
               </div>
             </div>
           ))
