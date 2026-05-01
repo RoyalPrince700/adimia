@@ -24,6 +24,7 @@ const reconcilePaystackAdminController = async (request, response) => {
 
         const result = await finalizePaystackByReference(reference, request.userId, {
             resendEmailsForExisting: false,
+            verifyProfile: 'thorough',
         });
 
         return response.status(result.statusCode).json({

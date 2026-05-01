@@ -115,6 +115,7 @@ const verifyPaymentController = async (request, response) => {
 
         const result = await finalizePaystackByReference(reference, request.userId, {
             resendEmailsForExisting: false,
+            verifyProfile: 'quick',
         });
 
         if (!result.ok) {

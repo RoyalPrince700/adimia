@@ -71,14 +71,13 @@ const Success = () => {
 
     (async () => {
       if (verificationKey) {
-        const maxAttempts = 5;
-        const delaysMs = [0, 400, 900, 1800, 3200];
+        /** Server uses `verifyProfile: quick`. One silent retry avoids rare race without stacking long delays (old UX was 5 rounds × heavy server retries). */
+        const maxAttempts = 2;
+        const delayBeforeRetryMs = 550;
 
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
           if (cancelled) return;
-          if (attempt > 0) {
-            await sleep(delaysMs[attempt] ?? 2000);
-          }
+          if (attempt > 0) await sleep(delayBeforeRetryMs);
           if (cancelled) return;
 
           try {
@@ -164,8 +163,20 @@ const Success = () => {
                   <h1 className="mt-8 text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
                     Verifying payment…
                   </h1>
-                  <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
-                    Please wait while we confirm your order with the payment provider.
+                  <p className="mt-4 max-w-md mx-auto text-sm leading-relaxed text-slate-600 sm:text-[15px]">
+                    Payment has already succeeded with Paystack. We&apos;re attaching it to your
+                    account—this usually completes in seconds.
+                  </p>
+                  <p className="mt-4 max-w-md mx-auto text-xs leading-relaxed text-slate-500 sm:text-sm">
+                    You don&apos;t need to keep this tab open. You can visit{' '}
+                    <Link
+                      to="/account/orders"
+                      className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-900"
+                    >
+                      My orders
+                    </Link>{' '}
+                    or your inbox later—the order often still completes in the background if you
+                    leave early.
                   </p>
                 </>
               ) : verifyOk ? (

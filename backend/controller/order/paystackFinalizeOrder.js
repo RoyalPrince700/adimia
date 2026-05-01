@@ -82,17 +82,28 @@ function sanitizeCartLines(items) {
     return out;
 }
 
-/**
- * Webhook/success race: verify may not succeed on first poll.
- */
-async function verifyPaystackTransactionWithRetry(reference, maxAttempts = 6) {
+/** Browser /success: fewer Paystack polls so the shopper is not staring at a spinner for 30s+. */
+/** Webhook/reconcile/slow infra: tolerate Paystack propagation delay before verify returns success. */
+const VERIFY_PROFILES = {
+    quick: {
+        maxAttempts: 5,
+        waitAfterFailMs: (attempt) => Math.min(520, 50 + attempt * 95),
+    },
+    thorough: {
+        maxAttempts: 10,
+        waitAfterFailMs: (attempt) => Math.min(2500, 320 + attempt * 380),
+    },
+};
+
+async function verifyPaystackTransactionWithRetry(reference, profile = 'thorough') {
+    const cfg = VERIFY_PROFILES[profile] || VERIFY_PROFILES.thorough;
     let last = null;
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+
+    for (let attempt = 0; attempt < cfg.maxAttempts; attempt++) {
         last = await paystackVerifyTransaction(reference);
         if (last?.status === true && last?.data?.status === 'success') return last;
 
-        const waitMs = Math.min(2500, 350 + attempt * 400);
-        if (attempt < maxAttempts - 1) await sleep(waitMs);
+        if (attempt < cfg.maxAttempts - 1) await sleep(cfg.waitAfterFailMs(attempt));
     }
     return last;
 }
@@ -198,10 +209,10 @@ async function sendFulfillmentEmails({
  *
  * @param {string} reference
  * @param {string|undefined} requestUserId - JWT user id fallback when metadata has no user
- * @param {{ resendEmailsForExisting?: boolean }} options Success-page flow resends mails on duplicate admin reconcile does not
+ * @param {{ resendEmailsForExisting?: boolean, verifyProfile?: 'quick' | 'thorough' }} options
  */
 async function finalizePaystackByReference(reference, requestUserId, options = {}) {
-    const { resendEmailsForExisting = false } = options;
+    const { resendEmailsForExisting = false, verifyProfile = 'thorough' } = options;
 
     const existingCheckout = await checkoutModel.findOne({
         'paymentDetails.paymentId': reference,
@@ -237,7 +248,7 @@ async function finalizePaystackByReference(reference, requestUserId, options = {
         };
     }
 
-    const verifyJson = await verifyPaystackTransactionWithRetry(reference);
+    const verifyJson = await verifyPaystackTransactionWithRetry(reference, verifyProfile);
 
     const ok = verifyJson?.status === true && verifyJson?.data?.status === 'success';
     if (!ok) {
@@ -391,4 +402,5 @@ module.exports = {
     finalizePaystackByReference,
     paystackPaymentLabel,
     PAYSTACK_METHOD_DEFAULT,
+    VERIFY_PROFILES,
 };

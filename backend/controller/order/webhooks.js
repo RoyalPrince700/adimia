@@ -68,6 +68,7 @@ const webhooks = async (request, response) => {
                 try {
                     const result = await finalizePaystackByReference(reference, requestUserId, {
                         resendEmailsForExisting: false,
+                        verifyProfile: 'thorough',
                     })
                     console.log('[Paystack webhook] finalized checkout', {
                         ok: result.ok,
