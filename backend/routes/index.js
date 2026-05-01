@@ -65,6 +65,8 @@ const { upload, uploadImage } = require('../controller/uploadImage');
 const { googleAuth, googleAuthCallback } = require('../controller/user/authController');
 
 const verifyPaymentController = require('../controller/order/verifyPaymentController');
+const reconcilePaystackAdminController = require('../controller/order/reconcilePaystackAdminController');
+const optionalAuthToken = require('../middleware/optionalAuthToken');
 
 // Authentication routes
 router.post("/signup", UserSignUpController);
@@ -119,6 +121,7 @@ router.get("/all-logistics-associate", authToken, requireRole('ADMIN','HR'), all
 router.get("/get-active-logistics-associate", authToken, getActiveLAs);
 router.get("/assigned-order", assignedOrdersController);
 router.get("/all-orders", authToken, requireRole('ADMIN'), allOrdersController);
+router.post("/admin/reconcile-paystack", authToken, requireRole('ADMIN'), reconcilePaystackAdminController);
 router.get("/daily-sales", authToken, requireRole('ADMIN'), dailySalesController);
 router.get("/sales-channel", authToken, requireRole('ADMIN'), salesByChannelController);
 router.get("/sales-trend", authToken, requireRole('ADMIN'), salesTrendController);
@@ -159,7 +162,7 @@ router.post("/filter-product", filterProductController);
 router.get('/payondelivery-orders', authToken, getUserOrders);
 // Payment and order
 router.post("/process-payment", authToken, paymentController);
-router.post("/verify-payment", authToken, verifyPaymentController);
+router.post("/verify-payment", optionalAuthToken, verifyPaymentController);
 router.post("/webhook", webhooks);
 router.get("/order-list", authToken, orderController);
 

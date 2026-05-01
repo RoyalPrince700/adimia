@@ -6,7 +6,7 @@ import displayNARCurrency from "../../helpers/displayCurrency";
 import ChangeOrderStatus from "../../components/ChangeOrderStatus";
 // import { useSocket } from "../../context/SocketContext";
 
-const OrdersTable = () => {
+const OrdersTable = ({ refreshKey = 0 }) => {
   const [allOrders, setAllOrders] = useState([]);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [openChangeStatus, setOpenChangeStatus] = useState(false);
@@ -39,7 +39,7 @@ const OrdersTable = () => {
 
   useEffect(() => {
     fetchAllOrders();
-  }, []);
+  }, [refreshKey]);
 
   // WebSocket (Socket.IO) — admin real-time updates disabled
   // useEffect(() => { socket.emit('join-admin-room'); ... }, [socket]);

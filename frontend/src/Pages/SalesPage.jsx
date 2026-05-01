@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { TbCurrencyNaira } from "react-icons/tb";
-import { FaShoppingCart, FaChartLine, FaArrowUp } from "react-icons/fa";
+import { FaChartLine, FaArrowUp } from "react-icons/fa";
 import Header from "../common/Header";
 import StatCard from "../common/StatCard";
 import SalesOverviewChart from "../analysis/overview/SalesOverViewChart";
 import CategoryDistributionChart from "../analysis/overview/CategoryDistributionChart";
 import DailySalesTrend from "../analysis/overview/DailySalesTrend";
 import SummaryApi from "../common";
+import { orderCountsTowardRevenue, orderIsDelivered } from "../helpers/orderAnalytics";
 
 const SalesPage = () => {
     const [salesStats, setSalesStats] = useState({
@@ -24,7 +25,7 @@ const SalesPage = () => {
     };
 
     const calculateSalesGrowth = (salesYesterday, salesTwoDaysAgo) => {
-        if (salesTwoDaysAgo === 0) return "N/A"; // Avoid division by zero
+        if (salesTwoDaysAgo === 0) return "N/A";
         const growth = ((salesYesterday - salesTwoDaysAgo) / salesTwoDaysAgo) * 100;
         return `${growth.toFixed(2)}%`;
     };
@@ -32,65 +33,62 @@ const SalesPage = () => {
     useEffect(() => {
         const fetchSalesData = async () => {
             try {
-                const response = await fetch(SummaryApi.assignedOrders.url, {
-                    method: SummaryApi.assignedOrders.method,
-                    headers: { "Content-Type": "application/json" },
+                const response = await fetch(SummaryApi.allOrders.url, {
+                    method: SummaryApi.allOrders.method,
+                    credentials: "include",
                 });
                 const data = await response.json();
-        
-                if (data.success) {
-                    const assignedOrders = data.data;
-        
-                    // Filter delivered and pending orders
-                    const deliveredOrders = assignedOrders.filter(order => order.status === "Delivered");
-                    const pendingOrders = assignedOrders.filter(order => order.status === "Pending"); // Define pendingOrders
-        
-                    // Calculate Total Revenue
-                    const totalRevenue = deliveredOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-        
-                    // Calculate Average Order Value
-                    const averageOrderValue = deliveredOrders.length
-                        ? totalRevenue / deliveredOrders.length
-                        : 0;
-        
-                    // Calculate Conversion Rate
-                    const conversionRate = deliveredOrders.length
-                        ? (pendingOrders.length / deliveredOrders.length) * 100
-                        : 0;
-        
-                    // Mock Sales Data for the Last Two Days
-                    const salesYesterday = deliveredOrders
-                        .filter(order => new Date(order.date).toDateString() === new Date().toDateString())
-                        .reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-        
-                    const salesTwoDaysAgo = deliveredOrders
-                        .filter(order => 
-                            new Date(order.date).toDateString() === 
-                            new Date(new Date().setDate(new Date().getDate() - 1)).toDateString()
-                        )
-                        .reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-        
-                    // Calculate Sales Growth
-                    const salesGrowth = calculateSalesGrowth(salesYesterday, salesTwoDaysAgo);
-        
-                    // Update state
-                    setSalesStats({
-                        totalRevenue: formatCurrency(totalRevenue),
-                        averageOrderValue: formatCurrency(averageOrderValue),
-                        conversionRate: `${conversionRate.toFixed(2)}%`,
-                        salesGrowth,
-                    });
-                } else {
+
+                if (!data.success) {
                     setError(data.message || "Failed to fetch sales data.");
+                    return;
                 }
-            } catch (error) {
-                console.error("Error fetching sales data:", error);
+
+                const orders = data.data || [];
+                const revenueOrders = orders.filter(orderCountsTowardRevenue);
+
+                const totalRevenue = revenueOrders.reduce(
+                    (sum, order) => sum + Number(order.totalPrice || 0),
+                    0
+                );
+                const averageOrderValue =
+                    revenueOrders.length > 0 ? totalRevenue / revenueOrders.length : 0;
+
+                const nonCancelled = orders.filter((o) => o.status !== "Cancelled");
+                const deliveredCount = orders.filter(orderIsDelivered).length;
+                const conversionRate =
+                    nonCancelled.length > 0
+                        ? (deliveredCount / nonCancelled.length) * 100
+                        : 0;
+
+                const todayStr = new Date().toDateString();
+                const y = new Date();
+                y.setDate(y.getDate() - 1);
+                const yesterdayStr = y.toDateString();
+
+                const salesToday = revenueOrders
+                    .filter((order) => new Date(order.createdAt).toDateString() === todayStr)
+                    .reduce((sum, order) => sum + Number(order.totalPrice || 0), 0);
+
+                const salesYesterday = revenueOrders
+                    .filter((order) => new Date(order.createdAt).toDateString() === yesterdayStr)
+                    .reduce((sum, order) => sum + Number(order.totalPrice || 0), 0);
+
+                const salesGrowth = calculateSalesGrowth(salesToday, salesYesterday);
+
+                setSalesStats({
+                    totalRevenue: formatCurrency(totalRevenue),
+                    averageOrderValue: formatCurrency(averageOrderValue),
+                    conversionRate: `${conversionRate.toFixed(2)}%`,
+                    salesGrowth,
+                });
+            } catch (err) {
+                console.error("Error fetching sales data:", err);
                 setError("Failed to fetch sales data.");
             } finally {
                 setLoading(false);
             }
         };
-        
 
         fetchSalesData();
     }, []);
@@ -123,13 +121,13 @@ const SalesPage = () => {
                             color="#10B981"
                         />
                         <StatCard
-                            name="Conversion Rate"
+                            name="Fulfillment ratio"
                             icon={FaChartLine}
                             value={salesStats.conversionRate}
                             color="#F59E0B"
                         />
                         <StatCard
-                            name="Sales Growth"
+                            name="Sales vs yesterday"
                             icon={FaArrowUp}
                             value={salesStats.salesGrowth}
                             color="#EF4444"

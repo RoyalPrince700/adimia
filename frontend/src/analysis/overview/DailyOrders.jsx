@@ -20,8 +20,8 @@ const DailyOrders = () => {
 	useEffect(() => {
 		const fetchDailyOrders = async () => {
 			try {
-				const response = await fetch(SummaryApi.assignedOrders.url, {
-					method: SummaryApi.assignedOrders.method,
+				const response = await fetch(SummaryApi.allOrders.url, {
+					method: SummaryApi.allOrders.method,
 					credentials: "include",
 				});
 				const data = await response.json();

@@ -180,6 +180,10 @@ const SummaryApi = {
         url : `${backendDomain}/api/verify-payment`,
         method : 'post'
     },
+    reconcilePaystack : {
+        url : `${backendDomain}/api/admin/reconcile-paystack`,
+        method : 'post'
+    },
     checkout : {
         url : `${backendDomain}/api/checkout`,
         method : "post"

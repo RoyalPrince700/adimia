@@ -11,7 +11,8 @@ const dailySalesController = async (req, res) => {
         const salesData = await orderModel.aggregate([
             {
                 $match: {
-                    createdAt: { $gte: startDate, $lte: endDate }, // Filter orders within this week
+                    createdAt: { $gte: startDate, $lte: endDate },
+                    status: { $ne: "Cancelled" },
                 },
             },
             {

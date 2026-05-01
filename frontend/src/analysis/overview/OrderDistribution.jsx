@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import SummaryApi from "../../common";
+import { orderStatusBucket } from "../../helpers/orderAnalytics";
 
-const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FED766", "#9B5DE5"];
+const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FED766", "#9B5DE5", "#64748b"];
 
 const OrderDistribution = () => {
 	const [orderStatusData, setOrderStatusData] = useState([]);
@@ -13,8 +14,8 @@ const OrderDistribution = () => {
 	useEffect(() => {
 		const fetchOrderStatus = async () => {
 			try {
-				const response = await fetch(SummaryApi.assignedOrders.url, {
-					method: SummaryApi.assignedOrders.method,
+				const response = await fetch(SummaryApi.allOrders.url, {
+					method: SummaryApi.allOrders.method,
 					credentials: "include",
 				});
 				const data = await response.json();
@@ -29,14 +30,13 @@ const OrderDistribution = () => {
 						Cancelled: 0,
 					};
 
-					// Count orders by status
 					data.data.forEach((order) => {
-						if (statusCounts[order.status] !== undefined) {
-							statusCounts[order.status]++;
+						const key = orderStatusBucket(order);
+						if (statusCounts[key] !== undefined) {
+							statusCounts[key]++;
 						}
 					});
 
-					// Format data for the chart
 					const formattedData = Object.entries(statusCounts).map(([name, value]) => ({
 						name,
 						value,

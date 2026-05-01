@@ -1,27 +1,68 @@
-const orderModel = require("../../models/checkoutModel");
+const checkoutModel = require("../../models/checkoutModel");
 
+/**
+ * Bucket sales by inferred channel from paymentMethod (schema has no salesChannel field).
+ */
 const salesByChannelController = async (req, res) => {
     try {
-        // Aggregate sales data by channel
-        const salesData = await orderModel.aggregate([
+        const salesData = await checkoutModel.aggregate([
+            {
+                $match: {
+                    status: { $ne: "Cancelled" },
+                },
+            },
+            {
+                $addFields: {
+                    pmLower: {
+                        $toLower: {
+                            $trim: {
+                                input: { $toString: { $ifNull: ["$paymentMethod", ""] } },
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                $addFields: {
+                    channelBucket: {
+                        $cond: [
+                            { $regexMatch: { input: "$pmLower", regex: /paystack/ } },
+                            "Paystack",
+                            {
+                                $cond: [
+                                    { $eq: ["$pmLower", "pay on delivery"] },
+                                    "Pay on Delivery",
+                                    {
+                                        $cond: [
+                                            { $eq: ["$pmLower", ""] },
+                                            "Unknown",
+                                            { $ifNull: ["$paymentMethod", "Other"] },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+            },
             {
                 $group: {
-                    _id: "$salesChannel", // Assuming "salesChannel" is a field in the order schema
-                    totalSales: { $sum: "$totalPrice" }, // Sum the total sales for each channel
-                    count: { $sum: 1 }, // Count the number of orders per channel
+                    _id: "$channelBucket",
+                    totalSales: { $sum: "$totalPrice" },
+                    count: { $sum: 1 },
                 },
             },
             {
                 $project: {
-                    name: "$_id", // Rename _id to name
-                    value: "$totalSales", // Rename totalSales to value for easier frontend handling
-                    count: 1, // Include the count of orders
-                    _id: 0, // Exclude the _id field from the result
+                    name: {
+                        $ifNull: ["$_id", "Unknown"],
+                    },
+                    value: "$totalSales",
+                    count: 1,
+                    _id: 0,
                 },
             },
-            {
-                $sort: { value: -1 }, // Sort channels by total sales (highest to lowest)
-            },
+            { $sort: { value: -1 } },
         ]);
 
         res.json({

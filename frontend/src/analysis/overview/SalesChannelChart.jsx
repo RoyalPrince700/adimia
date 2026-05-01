@@ -14,6 +14,7 @@ const SalesChannelChart = () => {
 		try {
 			const response = await fetch(SummaryApi.salesByChannel.url, {
 				method: SummaryApi.salesByChannel.method,
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 			});
 

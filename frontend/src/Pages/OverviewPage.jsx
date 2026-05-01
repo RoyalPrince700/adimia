@@ -9,6 +9,7 @@ import StatCard from "../common/StatCard";
 import SummaryApi from "../common";
 import SalesOverviewChart from "../analysis/overview/SalesOverViewChart";
 import CategoryDistributionChart from "../analysis/overview/CategoryDistributionChart";
+import { orderCountsTowardRevenue, orderIsDelivered } from "../helpers/orderAnalytics";
 
 const OverviewPage = () => {
     const [stats, setStats] = useState({
@@ -23,19 +24,26 @@ const OverviewPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch assigned orders
-                const assignedOrdersResponse = await fetch(SummaryApi.assignedOrders.url, {
-                    method: SummaryApi.assignedOrders.method,
-                    headers: { "Content-Type": "application/json" },
+                const ordersResponse = await fetch(SummaryApi.allOrders.url, {
+                    method: SummaryApi.allOrders.method,
+                    credentials: "include",
                 });
-                const assignedOrdersData = await assignedOrdersResponse.json();
+                const ordersPayload = await ordersResponse.json();
 
                 let totalSales = 0;
-                if (assignedOrdersData.success) {
-                    totalSales = assignedOrdersData.data.reduce(
-                        (sum, order) => sum + (order.totalPrice || 0) * (order.totalQuantity || 1),
-                        0
-                    );
+                let conversionRate = "0%";
+                if (ordersPayload.success && Array.isArray(ordersPayload.data)) {
+                    const list = ordersPayload.data;
+                    totalSales = list
+                        .filter(orderCountsTowardRevenue)
+                        .reduce((sum, order) => sum + Number(order.totalPrice || 0), 0);
+
+                    const nonCancelled = list.filter((o) => o.status !== "Cancelled");
+                    const delivered = list.filter(orderIsDelivered).length;
+                    conversionRate =
+                        nonCancelled.length > 0
+                            ? `${((delivered / nonCancelled.length) * 100).toFixed(1)}%`
+                            : "0%";
                 }
 
                 // Fetch all users
@@ -61,12 +69,12 @@ const OverviewPage = () => {
                     totalProducts = productsData.data.length;
                 }
 
-                // Update stats
-                setStats(prev => ({
+                setStats((prev) => ({
                     ...prev,
                     totalSales,
                     totalUsers,
                     totalProducts,
+                    conversionRate,
                 }));
             } catch (error) {
                 console.error("Error fetching data:", error);

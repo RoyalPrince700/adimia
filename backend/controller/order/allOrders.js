@@ -6,11 +6,8 @@ const allOrdersController = async (req, res) => {
         .find({}) // Fetch all orders regardless of status or assignment
         .sort({ createdAt: -1 })
         .populate("cartItems.productId", "productName productImage sellingPrice")
-        .populate("userId", "name email address number");
-      
+        .populate("userId", "fullName email phone");
 
-        // Debugging: Log orders to verify fields
-        console.log("Fetched Orders:", JSON.stringify(allOrders, null, 2));
 
         // Respond with the fetched orders
         res.json({

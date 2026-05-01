@@ -10,43 +10,37 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import SummaryApi from "../../common";
+import { orderCountsTowardRevenue } from "../../helpers/orderAnalytics";
 
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const SalesOverviewChart = () => {
-  const [weeklySalesData, setWeeklySalesData] = useState([
-    { name: "Sunday", sales: 0 },
-    { name: "Monday", sales: 0 },
-    { name: "Tuesday", sales: 0 },
-    { name: "Wednesday", sales: 0 },
-    { name: "Thursday", sales: 0 },
-    { name: "Friday", sales: 0 },
-    { name: "Saturday", sales: 0 },
-  ]);
+  const [weeklySalesData, setWeeklySalesData] = useState(() =>
+    DAYS.map((name) => ({ name, sales: 0 }))
+  );
 
   const fetchWeeklySales = async () => {
     try {
-      const response = await fetch(SummaryApi.assignedOrders.url, {
-        method: SummaryApi.assignedOrders.method,
+      const response = await fetch(SummaryApi.allOrders.url, {
+        method: SummaryApi.allOrders.method,
         credentials: "include",
       });
       const dataResponse = await response.json();
 
-      if (dataResponse.success) {
-        const orders = dataResponse.data;
-        const updatedSalesData = [...weeklySalesData];
-
-        // Process orders to calculate sales per day
-        orders.forEach((order) => {
-          if (order.status === "Delivered") {
-            const orderDate = new Date(order.createdAt);
-            const dayOfWeek = orderDate.getDay(); // 0 (Sunday) to 6 (Saturday)
-
-            updatedSalesData[dayOfWeek].sales += order.totalPrice;
-          }
-        });
-
-        setWeeklySalesData(updatedSalesData);
+      if (!dataResponse.success || !Array.isArray(dataResponse.data)) {
+        return;
       }
+
+      const updatedSalesData = DAYS.map((name) => ({ name, sales: 0 }));
+
+      dataResponse.data.forEach((order) => {
+        if (!orderCountsTowardRevenue(order)) return;
+        const orderDate = new Date(order.createdAt);
+        const dayOfWeek = orderDate.getDay();
+        updatedSalesData[dayOfWeek].sales += Number(order.totalPrice || 0);
+      });
+
+      setWeeklySalesData(updatedSalesData);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     }
