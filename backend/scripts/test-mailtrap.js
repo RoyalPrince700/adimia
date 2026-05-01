@@ -41,7 +41,7 @@ async function main() {
         number: '+1234567890',
         address: '123 Test Street, Test City',
         note: 'Please handle with care',
-        paymentMethod: 'Flutterwave',
+        paymentMethod: 'Paystack',
         total: '₦25,000',
         cartItems: [
           {

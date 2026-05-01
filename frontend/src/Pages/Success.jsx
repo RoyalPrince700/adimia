@@ -12,12 +12,20 @@ const Success = () => {
   const searchParams = new URLSearchParams(location.search);
   const statusRaw = searchParams.get('status');
   const status = statusRaw ? statusRaw.toLowerCase() : null;
-  const transactionId = searchParams.get('transaction_id');
 
-  const isFlutterwaveAbort = status === 'cancelled' || status === 'failed';
+  /** Paystack returns `reference` (and sometimes `trxref`) on redirect. */
+  const paystackReference =
+    searchParams.get('reference') || searchParams.get('trxref');
+
+  /** Legacy support if an old gateway ever passed numeric id separately. */
+  const legacyTxId = searchParams.get('transaction_id');
+
+  const verificationKey = paystackReference || legacyTxId;
+
+  const isPaymentAbort = status === 'cancelled' || status === 'failed';
 
   useEffect(() => {
-    if (isFlutterwaveAbort) {
+    if (isPaymentAbort) {
       return;
     }
 
@@ -30,12 +38,12 @@ const Success = () => {
     };
 
     (async () => {
-      if (status === 'successful' && transactionId) {
+      if (verificationKey) {
         try {
           const response = await fetch(SummaryApi.verifyPayment.url, {
             method: SummaryApi.verifyPayment.method,
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ transaction_id: transactionId }),
+            body: JSON.stringify({ reference: verificationKey }),
             credentials: 'include',
           });
           const data = await response.json();
@@ -59,7 +67,7 @@ const Success = () => {
         return;
       }
 
-      if (status === 'successful' && !transactionId) {
+      if (status === 'successful' && !verificationKey) {
         if (!cancelled) {
           setVerifyOk(false);
           toast.error('Missing payment reference. Please contact support if you were charged.');
@@ -68,7 +76,7 @@ const Success = () => {
         return;
       }
 
-      if (!status && !transactionId) {
+      if (!status && !verificationKey) {
         if (!cancelled) {
           setVerifyOk(false);
         }
@@ -85,9 +93,9 @@ const Success = () => {
     return () => {
       cancelled = true;
     };
-  }, [location.search, isFlutterwaveAbort, status, transactionId]);
+  }, [location.search, isPaymentAbort, status, verificationKey]);
 
-  if (isFlutterwaveAbort) {
+  if (isPaymentAbort) {
     return <Navigate to="/cancel" replace />;
   }
 

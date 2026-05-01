@@ -47,7 +47,7 @@ function getGoogleOAuthCallbackUrl() {
 }
 
 /**
- * Storefront base URL: OAuth redirects, Flutterwave return URL, email buttons/links.
+ * Storefront base URL: OAuth redirects, Paystack callback URL, email buttons/links.
  * Uses FRONTEND_URL when set (https optional); in production, defaults to the live store if unset.
  */
 function getFrontendBaseUrl() {

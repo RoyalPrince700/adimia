@@ -23,7 +23,7 @@ const FAQ = () => {
         },
         {
           question: "What payment methods do you accept?",
-          answer: "We accept all major credit/debit cards, bank transfers, and digital payment methods including PayPal, Flutterwave, and direct bank transfers."
+          answer: "We accept all major credit/debit cards, bank transfers, and digital payment methods including PayPal, Paystack, and direct bank transfers."
         },
         {
           question: "Is it safe to make payments on your website?",

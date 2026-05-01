@@ -147,7 +147,7 @@ const Checkout = () => {
     }
   };
 
-  const handleFlutterwavePayment = async () => {
+  const handlePaystackPayment = async () => {
     if (!validateShippingDetails()) return;
 
     setIsLoading(true);
@@ -164,14 +164,16 @@ const Checkout = () => {
 
       const data = await response.json();
 
-      if (data.success && data.data?.link) {
-        window.location.href = data.data.link;
+      const payUrl =
+        data.data?.authorization_url || data.data?.link;
+      if (data.success && payUrl) {
+        window.location.href = payUrl;
       } else {
         toast.error(data.message || 'Failed to initiate payment');
         setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error initiating Flutterwave payment:', error);
+      console.error('Error initiating Paystack payment:', error);
       toast.error('Error processing payment. Please try again.');
       setIsLoading(false);
     }
@@ -399,7 +401,7 @@ const Checkout = () => {
                 className={`w-full rounded-full bg-slate-950 px-5 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-slate-800 disabled:opacity-50 ${
                   isPayOnDeliveryLoading ? 'pointer-events-none opacity-60' : ''
                 }`}
-                onClick={handleFlutterwavePayment}
+                onClick={handlePaystackPayment}
                 disabled={isLoading || isPayOnDeliveryLoading}
               >
                 {isLoading ? 'Redirecting to payment…' : `Pay ${displayNARCurrency(totalPrice.toFixed(2))}`}

@@ -65,7 +65,14 @@ app.use((req, res, next) => {
     }
 });
 
-app.use(express.json());
+app.use(express.json({
+    verify: (req, res, buf) => {
+        const pathOnly = req.originalUrl.split('?')[0];
+        if (pathOnly === '/api/webhook') {
+            req.paystackRawBody = buf;
+        }
+    },
+}));
 app.use(cookieParser());
 app.use(passport.initialize());
 
