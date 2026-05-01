@@ -4,6 +4,45 @@ import { IoCheckmarkCircle } from 'react-icons/io5';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 
+const REF_KEYS = ['reference', 'trxref', 'transaction_id'];
+
+/** Paystack normally uses query string; some hosts/SDKs put params in the hash fragment. */
+function readPaymentReference(loc) {
+  const searchPs = new URLSearchParams(loc.search || '');
+  for (const k of REF_KEYS) {
+    const v = searchPs.get(k);
+    if (v && String(v).trim()) return String(v).trim();
+  }
+
+  let h = loc.hash || '';
+  if (h.startsWith('#')) h = h.slice(1);
+  if (!h) return '';
+
+  const hashQs = h.includes('?') ? h.slice(h.indexOf('?') + 1) : h;
+  if (hashQs.includes('=')) {
+    const hashPs = new URLSearchParams(hashQs);
+    for (const k of REF_KEYS) {
+      const v = hashPs.get(k);
+      if (v && String(v).trim()) return String(v).trim();
+    }
+  }
+
+  const loose = /^reference=([^&]+)/i.exec(h);
+  if (loose?.[1]) {
+    try {
+      return decodeURIComponent(loose[1].trim());
+    } catch {
+      return loose[1].trim();
+    }
+  }
+
+  return '';
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const Success = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -13,14 +52,7 @@ const Success = () => {
   const statusRaw = searchParams.get('status');
   const status = statusRaw ? statusRaw.toLowerCase() : null;
 
-  /** Paystack returns `reference` (and sometimes `trxref`) on redirect. */
-  const paystackReference =
-    searchParams.get('reference') || searchParams.get('trxref');
-
-  /** Legacy support if an old gateway ever passed numeric id separately. */
-  const legacyTxId = searchParams.get('transaction_id');
-
-  const verificationKey = paystackReference || legacyTxId;
+  const verificationKey = readPaymentReference(location);
 
   const isPaymentAbort = status === 'cancelled' || status === 'failed';
 
@@ -39,30 +71,46 @@ const Success = () => {
 
     (async () => {
       if (verificationKey) {
-        try {
-          const response = await fetch(SummaryApi.verifyPayment.url, {
-            method: SummaryApi.verifyPayment.method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reference: verificationKey }),
-            credentials: 'include',
-          });
-          const data = await response.json();
-          if (cancelled) {
-            return;
+        const maxAttempts = 5;
+        const delaysMs = [0, 400, 900, 1800, 3200];
+
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          if (cancelled) return;
+          if (attempt > 0) {
+            await sleep(delaysMs[attempt] ?? 2000);
           }
-          if (data.success) {
-            setVerifyOk(true);
-            toast.success('Order confirmed!');
-          } else {
-            setVerifyOk(false);
-            toast.error(data.message || 'Failed to confirm order');
-          }
-        } catch {
-          if (!cancelled) {
-            setVerifyOk(false);
-            toast.error('Error confirming order');
+          if (cancelled) return;
+
+          try {
+            const response = await fetch(SummaryApi.verifyPayment.url, {
+              method: SummaryApi.verifyPayment.method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reference: verificationKey }),
+              credentials: 'include',
+            });
+            const data = await response.json();
+            if (cancelled) return;
+
+            if (data.success) {
+              setVerifyOk(true);
+              toast.success('Order confirmed!');
+              finish();
+              return;
+            }
+
+            if (attempt === maxAttempts - 1) {
+              setVerifyOk(false);
+              toast.error(data.message || 'Failed to confirm order');
+            }
+          } catch {
+            if (cancelled) return;
+            if (attempt === maxAttempts - 1) {
+              setVerifyOk(false);
+              toast.error('Error confirming order');
+            }
           }
         }
+
         finish();
         return;
       }
@@ -93,7 +141,7 @@ const Success = () => {
     return () => {
       cancelled = true;
     };
-  }, [location.search, isPaymentAbort, status, verificationKey]);
+  }, [location.pathname, location.search, location.hash, isPaymentAbort, status, verificationKey]);
 
   if (isPaymentAbort) {
     return <Navigate to="/cancel" replace />;

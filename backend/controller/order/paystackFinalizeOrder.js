@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const orderModel = require('../../models/orderProductModel');
 const checkoutModel = require('../../models/checkoutModel');
 const addToCartModel = require('../../models/cartProduct');
@@ -7,10 +8,94 @@ const {
     sendPaymentSuccessNotificationToAdmin,
     sendUserOrderConfirmationEmail,
     sendOrderNotificationEmail,
+    getAdminRecipientsFromEnv,
 } = require('../../mailtrap/emails');
 const { paystackVerifyTransaction } = require('../../lib/paystack');
 
 const PAYSTACK_METHOD_DEFAULT = 'Paystack';
+
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Merge flat metadata plus Paystack custom_fields; parse metadata if JSON string.
+ */
+function normalizePaystackMetadata(txnData) {
+    const merged = {};
+    let raw = txnData?.metadata;
+
+    if (typeof raw === 'string') {
+        try {
+            raw = JSON.parse(raw);
+        } catch (_e) {
+            raw = {};
+        }
+    }
+
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+        Object.assign(merged, raw);
+    }
+
+    const fields = raw?.custom_fields;
+    if (Array.isArray(fields)) {
+        for (const f of fields) {
+            if (
+                f &&
+                typeof f.variable_name === 'string' &&
+                f.variable_name.trim() !== '' &&
+                f.value !== undefined &&
+                f.value !== null
+            ) {
+                const vn = f.variable_name.trim();
+                merged[vn] = merged[vn] ?? f.value;
+            }
+        }
+    }
+
+    return merged;
+}
+
+function pickValidObjectId(...candidates) {
+    for (const c of candidates) {
+        if (c == null || c === '') continue;
+        const s = String(c).trim();
+        if (mongoose.isValidObjectId(s)) return s;
+    }
+    return undefined;
+}
+
+function sanitizeCartLines(items) {
+    if (!Array.isArray(items)) return [];
+    const out = [];
+    for (const item of items) {
+        const pid = item?.productId;
+        if (!pid || !mongoose.isValidObjectId(String(pid))) continue;
+        out.push({
+            productId: String(pid),
+            quantity: Math.max(1, Math.floor(Number(item.quantity)) || 1),
+            ...(item.price != null && !Number.isNaN(Number(item.price))
+                ? { price: Number(item.price) }
+                : {}),
+        });
+    }
+    return out;
+}
+
+/**
+ * Webhook/success race: verify may not succeed on first poll.
+ */
+async function verifyPaystackTransactionWithRetry(reference, maxAttempts = 6) {
+    let last = null;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        last = await paystackVerifyTransaction(reference);
+        if (last?.status === true && last?.data?.status === 'success') return last;
+
+        const waitMs = Math.min(2500, 350 + attempt * 400);
+        if (attempt < maxAttempts - 1) await sleep(waitMs);
+    }
+    return last;
+}
 
 function paystackPaymentLabel(data) {
     const channel = data?.channel;
@@ -18,7 +103,18 @@ function paystackPaymentLabel(data) {
     return `Paystack (${channel})`;
 }
 
-async function sendFulfillmentEmails({ savedCheckout, cartItemsLen, channelData, amountNgn }) {
+async function sendFulfillmentEmails({
+    savedCheckout,
+    cartItemsLen,
+    channelData,
+    amountNgn,
+    forceResend = false,
+}) {
+    if (!forceResend && savedCheckout?.paymentFulfillmentEmailsSentAt) {
+        console.log('[Paystack finalize] Skipping fulfillment emails (already sent):', savedCheckout._id);
+        return;
+    }
+
     let customerEmail = channelData.customer?.email;
     if (!customerEmail && savedCheckout?.userId) {
         const u = await UserModel.findById(savedCheckout.userId).select('email');
@@ -45,33 +141,56 @@ async function sendFulfillmentEmails({ savedCheckout, cartItemsLen, channelData,
     if (userId) {
         const user = await UserModel.findById(userId);
         if (user?.email) {
-            await sendPaymentSuccessEmail(user.email, paymentData);
-            await sendUserOrderConfirmationEmail(user.email, savedCheckout);
+            try {
+                await sendPaymentSuccessEmail(user.email, paymentData);
+            } catch (e) {
+                console.error('[Paystack finalize] sendPaymentSuccessEmail:', e);
+            }
+            try {
+                await sendUserOrderConfirmationEmail(user.email, savedCheckout);
+            } catch (e) {
+                console.error('[Paystack finalize] sendUserOrderConfirmationEmail:', e);
+            }
         }
     }
 
-    await sendPaymentSuccessNotificationToAdmin(paymentData);
+    let adminNotified = false;
 
-    const adminRecipients = [];
-    if (process.env.ADMINEMAIL1) adminRecipients.push(process.env.ADMINEMAIL1);
-    if (process.env.ADMINEMAIL2) adminRecipients.push(process.env.ADMINEMAIL2);
-    if (
-        process.env.ADMIN_NOTIFICATION_EMAIL &&
-        !adminRecipients.includes(process.env.ADMIN_NOTIFICATION_EMAIL)
-    ) {
-        adminRecipients.push(process.env.ADMIN_NOTIFICATION_EMAIL);
+    try {
+        await sendPaymentSuccessNotificationToAdmin(paymentData);
+        adminNotified = true;
+    } catch (e) {
+        console.error('[Paystack finalize] sendPaymentSuccessNotificationToAdmin:', e);
     }
-    if (adminRecipients.length === 0) adminRecipients.push('ronniesfabrics05@gmail.com');
 
-    await sendOrderNotificationEmail(adminRecipients, {
-        name: savedCheckout.name,
-        number: savedCheckout.number,
-        address: savedCheckout.address,
-        note: savedCheckout.note || 'N/A',
-        paymentMethod: pm,
-        total: `₦${savedCheckout.totalPrice}`,
-        cartItems: savedCheckout.cartItems,
-    });
+    let adminRecipients = getAdminRecipientsFromEnv();
+    if (adminRecipients.length === 0) adminRecipients = ['ronniesfabrics05@gmail.com'];
+
+    try {
+        await sendOrderNotificationEmail(adminRecipients, {
+            name: savedCheckout.name,
+            number: savedCheckout.number,
+            address: savedCheckout.address,
+            note: savedCheckout.note || 'N/A',
+            paymentMethod: pm,
+            total: `₦${savedCheckout.totalPrice}`,
+            cartItems: savedCheckout.cartItems,
+        });
+        adminNotified = true;
+    } catch (e) {
+        console.error('[Paystack finalize] sendOrderNotificationEmail:', e);
+    }
+
+    if (adminNotified && savedCheckout?._id) {
+        try {
+            await checkoutModel.updateOne(
+                { _id: savedCheckout._id },
+                { $set: { paymentFulfillmentEmailsSentAt: new Date() } }
+            );
+        } catch (e) {
+            console.error('[Paystack finalize] Could not mark paymentFulfillmentEmailsSentAt:', e);
+        }
+    }
 }
 
 /**
@@ -101,6 +220,7 @@ async function finalizePaystackByReference(reference, requestUserId, options = {
                         customer: {},
                     },
                     amountNgn: existingCheckout.totalPrice,
+                    forceResend: true,
                 });
             } catch (e) {
                 console.error('[Paystack finalize] Email error (existing checkout):', e);
@@ -117,36 +237,43 @@ async function finalizePaystackByReference(reference, requestUserId, options = {
         };
     }
 
-    const verifyJson = await paystackVerifyTransaction(reference);
+    const verifyJson = await verifyPaystackTransactionWithRetry(reference);
 
-    const ok = verifyJson.status === true && verifyJson.data?.status === 'success';
+    const ok = verifyJson?.status === true && verifyJson?.data?.status === 'success';
     if (!ok) {
+        console.warn('[Paystack finalize] Verify failed for reference:', reference, {
+            message: verifyJson?.message,
+            dataStatus: verifyJson?.data?.status,
+        });
         return {
             ok: false,
             statusCode: 400,
-            message: verifyJson.message || 'Payment verification failed (not successful on Paystack).',
+            message: verifyJson?.message || 'Payment verification failed (not successful on Paystack).',
         };
     }
 
     const data = verifyJson.data;
-    const meta = data.metadata || {};
+    const meta = normalizePaystackMetadata(data);
 
     let cartItemsForCheckout = [];
-    if (meta.cartItems) {
+    const cartSrc = meta.cartItems;
+    if (typeof cartSrc === 'string' && cartSrc.trim()) {
         try {
-            const parsedCartItems = JSON.parse(meta.cartItems);
-            cartItemsForCheckout = parsedCartItems.map((item) => ({
-                productId: item.productId,
-                quantity: item.quantity,
-                ...(item.price != null ? { price: item.price } : {}),
-            }));
+            const parsedCartItems = JSON.parse(cartSrc);
+            cartItemsForCheckout = sanitizeCartLines(parsedCartItems);
         } catch (err) {
-            console.error('Error parsing cartItems:', err);
+            console.error('Error parsing cartItems string:', err);
         }
+    } else if (Array.isArray(cartSrc)) {
+        cartItemsForCheckout = sanitizeCartLines(cartSrc);
     }
 
     const amountNgn = data.amount / 100;
-    const resolvedUserId = meta.user_id || meta.userId || requestUserId;
+    const resolvedUserId = pickValidObjectId(
+        meta.user_id,
+        meta.userId,
+        requestUserId
+    );
 
     let resolvedName =
         typeof meta.name === 'string' && meta.name.trim() ? meta.name.trim() : '';
@@ -182,8 +309,33 @@ async function finalizePaystackByReference(reference, requestUserId, options = {
         checkoutData.name = data.customer.email.split('@')[0];
     }
 
-    const newCheckout = new checkoutModel(checkoutData);
-    const savedCheckout = await newCheckout.save();
+    const extraWarnings = [];
+    let savedCheckout;
+
+    try {
+        savedCheckout = await new checkoutModel(checkoutData).save();
+    } catch (saveErr) {
+        console.error(
+            '[Paystack finalize] Checkout save failed, retrying with empty cart/no user:',
+            saveErr.message || saveErr
+        );
+        checkoutData.cartItems = [];
+        cartItemsForCheckout = [];
+        checkoutData.userId = undefined;
+        extraWarnings.push(
+            'Checkout had invalid cart or user linkage; saved totals only — reconcile line items manually if needed.'
+        );
+        try {
+            savedCheckout = await new checkoutModel(checkoutData).save();
+        } catch (e2) {
+            console.error('[Paystack finalize] Second save failed:', e2.message || e2);
+            return {
+                ok: false,
+                statusCode: 500,
+                message: 'Could not save order after payment (database validation error).',
+            };
+        }
+    }
 
     const orderDetails = {
         productDetails: cartItemsForCheckout,
@@ -194,7 +346,12 @@ async function finalizePaystackByReference(reference, requestUserId, options = {
         totalAmount: amountNgn,
     };
 
-    await new orderModel(orderDetails).save();
+    try {
+        await new orderModel(orderDetails).save();
+    } catch (orderErr) {
+        console.error('[Paystack finalize] Legacy orderProduct save failed:', orderErr.message || orderErr);
+        extraWarnings.push('Checkout created but mirrored order row could not be saved.');
+    }
 
     if (savedCheckout?._id && resolvedUserId) {
         await addToCartModel.deleteMany({ userId: resolvedUserId });
@@ -213,9 +370,11 @@ async function finalizePaystackByReference(reference, requestUserId, options = {
         console.error('[Paystack finalize] Email error:', emailError);
     }
 
-    const warnings = [];
-    if (cartItemsForCheckout.length === 0) {
-        warnings.push('No line items in Paystack metadata — order amount is preserved; edit order in Paystack/email if needed.');
+    const warnings = [...extraWarnings];
+    if (!cartItemsForCheckout.length && !extraWarnings.some((w) => w.includes('totals only'))) {
+        warnings.push(
+            'No line items in Paystack metadata — order amount is preserved; edit or verify in admin if needed.'
+        );
     }
 
     return {

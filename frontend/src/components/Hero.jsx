@@ -28,7 +28,7 @@ const HeroCta = ({ cta, variant }) => {
 
 const defaultStats = [
   { value: 'Tech + Fashion', label: 'Collections' },
-  { value: '30+', label: 'Products' },
+  { value: '20+', label: 'Products' },
   { value: '100%', label: 'Visual-first' },
 ];
 

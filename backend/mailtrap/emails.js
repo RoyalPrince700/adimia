@@ -3,6 +3,20 @@ const { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_R
 
 const { getStorefrontBaseUrlForEmail } = require('../config/envUrls.js');
 
+/** Trimmed admin addresses from ADMINEMAIL1, ADMINEMAIL2, ADMIN_NOTIFICATION_EMAIL (quotes stripped). */
+const getAdminRecipientsFromEnv = () => {
+    const out = [];
+    const push = (v) => {
+        if (v == null || typeof v !== 'string') return;
+        let t = v.trim().replace(/^['"]+|['"]+$/g, '');
+        if (t && !out.includes(t)) out.push(t);
+    };
+    push(process.env.ADMINEMAIL1);
+    push(process.env.ADMINEMAIL2);
+    push(process.env.ADMIN_NOTIFICATION_EMAIL);
+    return out;
+};
+
 // Public storefront URL for email links (never localhost; see getStorefrontBaseUrlForEmail)
 const getFrontendUrl = () => {
     return getStorefrontBaseUrlForEmail() || '';
@@ -317,12 +331,7 @@ const sendPaymentSuccessEmail = async (userEmail, paymentData) => {
 
 // Admin payment success notification
 const sendPaymentSuccessNotificationToAdmin = async (paymentData) => {
-    const adminRecipients = [];
-    if (process.env.ADMINEMAIL1) adminRecipients.push(process.env.ADMINEMAIL1);
-    if (process.env.ADMINEMAIL2) adminRecipients.push(process.env.ADMINEMAIL2);
-    if (process.env.ADMIN_NOTIFICATION_EMAIL && !adminRecipients.includes(process.env.ADMIN_NOTIFICATION_EMAIL)) {
-        adminRecipients.push(process.env.ADMIN_NOTIFICATION_EMAIL);
-    }
+    const adminRecipients = getAdminRecipientsFromEnv();
 
     if (adminRecipients.length === 0) {
         console.warn('[MAIL] No admin recipients for payment notification. Set ADMINEMAIL1, ADMINEMAIL2, or ADMIN_NOTIFICATION_EMAIL.');
@@ -416,6 +425,7 @@ const sendOrderStatusUpdateEmail = async (userEmail, orderData) => {
 };
 
 module.exports = {
+    getAdminRecipientsFromEnv,
     sendVerificationEmail,
     sendWelcomeEmail,
     sendPasswordResetEmail,

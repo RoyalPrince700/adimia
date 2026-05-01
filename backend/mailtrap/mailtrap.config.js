@@ -1,9 +1,9 @@
+const path = require("path");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 
-// Load environment variables - search in current and parent dirs
-dotenv.config();
-dotenv.config({ path: '../.env' });
+// Resolve backend/.env regardless of process cwd (so SMTP + ADMINEMAIL* load reliably)
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const isProd = process.env.NODE_ENV === 'production';
 

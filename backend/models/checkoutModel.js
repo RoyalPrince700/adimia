@@ -28,6 +28,8 @@ const checkoutSchema = new mongoose.Schema({
         payment_method_type: String,
         payment_status: String,
     },
+    /** Set after payment-related customer + admin emails are sent (avoids duplicate when webhook + success page both run). */
+    paymentFulfillmentEmailsSentAt: { type: Date, default: null },
 }, {
     timestamps: true
 });
